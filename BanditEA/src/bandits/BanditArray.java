@@ -46,7 +46,7 @@ public class BanditArray {
             picker.add(gene.urgency(nEvals) + eps * random.nextDouble(), gene);
         }
 
-        System.out.println(picker.getBestScore());
+        //System.out.println(picker.getBestScore());
         return picker.getBest();
 
     }

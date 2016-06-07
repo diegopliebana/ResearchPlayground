@@ -50,4 +50,9 @@ public class BanditArray {
         return picker.getBest();
 
     }
+
+
+    public BanditGene selectRandomGene() {
+        return genome.get(new Random().nextInt(genome.size()));
+    }
 }

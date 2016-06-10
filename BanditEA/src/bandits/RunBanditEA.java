@@ -17,6 +17,7 @@ public class RunBanditEA
         int nTrials = 20;
         int nBandits = 64;
         int bSize = 8;
+        int resampling=1;
         float noise = 0.0f;
 
         if(args.length > 0)
@@ -26,6 +27,7 @@ public class RunBanditEA
                 nBandits = Integer.parseInt(args[1]);
                 noise = Float.parseFloat(args[2]);
                 bSize = Integer.parseInt(args[3]);
+                resampling = Integer.parseInt(args[4]);
 
             }catch (Exception e)
             {
@@ -36,8 +38,8 @@ public class RunBanditEA
 
         int nEvals = nBandits * 1000;
 
-        StatSummary ss = BanditEA.runTrials(nBandits, nTrials, nEvals, noise, bSize);
-        //BanditEA.dump(BanditEA.bestYets);
+        StatSummary ss = BanditEA.runTrials(nBandits, nTrials, nEvals, noise, bSize, resampling);
+        BanditEA.dump(BanditEA.bestYets, nBandits);
         System.err.println(ss);
     }
 

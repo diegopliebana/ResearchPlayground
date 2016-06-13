@@ -3,7 +3,7 @@ __author__ = 'dperez'
 import pylab
 import numpy as np
 import matplotlib.pyplot as plt
-
+import matplotlib
 
 def errorfill(x, y, yerr, ls, color=None, alpha_fill=0.3, ax=None):
     ax = ax if ax is not None else plt.gca()
@@ -62,6 +62,14 @@ fig = pylab.figure()
 
 #Add a subplot (Grid of plots 1x1, adding plot 1)
 ax = fig.add_subplot(111)
+
+
+ax.get_yaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
+ax.get_xaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 #ax.set_color_cycle(['blue','green','red','cyan','magenta','yellow','black'])
 ax.set_color_cycle(['blue','red','cyan','magenta','yellow','black'])

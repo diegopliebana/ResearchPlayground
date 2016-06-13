@@ -4,6 +4,7 @@ import pylab
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import matplotlib
 
 
 def errorfill(x, y, yerr, ls, color=None, alpha_fill=0.3, ax=None):
@@ -65,6 +66,14 @@ for filename in filenames:
 
     #Add a subplot (Grid of plots 1x1, adding plot 1)
     ax = fig.add_subplot(111)
+
+
+    ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
+    ax.get_xaxis().set_major_formatter(
+        matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
     results = np.genfromtxt(filename, delimiter=' ') # pylab.loadtxt(filename, comments='*', delimiter=' ')
     numLines = results.shape[0]

@@ -2,6 +2,7 @@ __author__ = 'dperez'
 
 import pylab
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -23,19 +24,19 @@ tot_std_dev = []
 tot_std_err = []
 
 
-# filenames = ["../exp/resultsBanditNoise0_1.txt", "../exp/resultsBanditNoise1_1.txt", "../exp/resultsBanditNoise1_2.txt",  "../exp/resultsBanditNoise1_3.txt", "../exp/resultsBanditNoise1_4.txt", "../exp/resultsBanditNoise1_5.txt", "../exp/resultsBanditNoise1_10.txt"]
-# algs = ["Bandit-EA Noise 0.0 (1)", "Bandit-EA Noise 1.0 (1)", "Bandit-EA Noise 1.0 (2)", "Bandit-EA Noise 1.0 (3)", "Bandit-EA Noise 1.0 (4)", "Bandit-EA Noise 1.0 (5)", "Bandit-EA Noise 1.0 (10)"]
-# output = "../exp/banditEAOneMax.pdf"
+filenames = ["../exp/resultsBanditNoise0_1.txt", "../exp/resultsBanditNoise1_1.txt", "../exp/resultsBanditNoise1_2.txt",  "../exp/resultsBanditNoise1_3.txt", "../exp/resultsBanditNoise1_4.txt", "../exp/resultsBanditNoise1_5.txt", "../exp/resultsBanditNoise1_10.txt"]
+algs = ["Bandit-EA Noise 0.0 (1)", "Bandit-EA Noise 1.0 (1)", "Bandit-EA Noise 1.0 (2)", "Bandit-EA Noise 1.0 (3)", "Bandit-EA Noise 1.0 (4)", "Bandit-EA Noise 1.0 (5)", "Bandit-EA Noise 1.0 (10)"]
+output = "../exp/banditEAOneMax.pdf"
 
 
-filenames = ["../exp/results1plus1Noise0_1.txt", "../exp/results1plus1Noise1_2.txt", "../exp/results1plus1Noise1_3.txt", "../exp/results1plus1Noise1_4.txt", "../exp/results1plus1Noise1_5.txt", "../exp/results1plus1Noise1_10.txt"]
-algs = ["RMHC Noise 0.0 (1)", "RMHC Noise 1.0 (2)", "RMHC Noise 1.0 (3)", "RMHC Noise 1.0 (4)", "RMHC Noise 1.0 (5)", "RMHC Noise 1.0 (10)"]
-output = "../exp/RMHCOneMax.pdf"
+# filenames = ["../exp/results1plus1Noise0_1.txt", "../exp/results1plus1Noise1_2.txt", "../exp/results1plus1Noise1_3.txt", "../exp/results1plus1Noise1_4.txt", "../exp/results1plus1Noise1_5.txt", "../exp/results1plus1Noise1_10.txt"]
+# algs = ["RMHC Noise 0.0 (1)", "RMHC Noise 1.0 (2)", "RMHC Noise 1.0 (3)", "RMHC Noise 1.0 (4)", "RMHC Noise 1.0 (5)", "RMHC Noise 1.0 (10)"]
+# output = "../exp/RMHCOneMax.pdf"
 
 
-# filenames = ["../exp/resultsBanditNoise0_1.txt", "../exp/results1plus1Noise0_1.txt", "../exp/resultsBanditNoise1_2.txt", "../exp/results1plus1Noise1_2.txt"]#, "../exp/resultsBanditNoise1_3.txt", "../exp/results1plus1Noise1_3.txt"]
-# algs = [     "Bandit-EA Noise 0.0 (1)",          "RMHC Noise 0.0 (1)",             "Bandit-EA Noise 1.0 (2)",          "RMHC Noise 1.0 (2)"]#,            "Bandit-EA Noise 1.0 (3)",          "RMHC Noise 1.0 (3)"]
-# output = "../exp/OneMax12.pdf"
+# filenames = ["../exp/resultsBanditNoise0_1.txt", "../exp/results1plus1Noise0_1.txt", "../exp/resultsBanditNoise1_2.txt"]#, "../exp/results1plus1Noise1_2.txt"]#, "../exp/resultsBanditNoise1_3.txt", "../exp/results1plus1Noise1_3.txt"]
+# algs = [     "Bandit-EA Noise 0.0 (1)",          "RMHC Noise 0.0 (1)",             "Bandit-EA Noise 1.0 (2)"]#          "RMHC Noise 1.0 (2)"]#,            "Bandit-EA Noise 1.0 (3)",          "RMHC Noise 1.0 (3)"]
+# output = "../exp/OneMax11.pdf"
 
 line_styles=['-','-','-','-','-','-','-']
 num_algs = len(filenames)
@@ -63,6 +64,15 @@ fig = pylab.figure()
 ax = fig.add_subplot(111)
 
 ax.set_color_cycle(['blue','red','cyan','magenta','yellow','black'])
+
+ax.get_yaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
+ax.get_xaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
 for i in range(num_algs):
 
     errorfill(steps[0:len(all_averages[i])], all_averages[i], all_stderr[i], line_styles[i], None, 0.3, ax)
@@ -75,7 +85,7 @@ plt.title('RMHC - One Max Problem')
 plt.xlabel('Dimensions')
 plt.ylabel('Evaluations')
 
-plt.legend(algs, loc=1)
+plt.legend(algs, loc=2)
 
 # plt.ylim([0,bandits*1.25])
 # plt.xlim([0,last_line])

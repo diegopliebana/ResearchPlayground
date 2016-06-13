@@ -2,6 +2,7 @@ __author__ = 'dperez'
 
 import pylab
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import math
 
@@ -64,6 +65,14 @@ for filename in filenames:
 
     #Add a subplot (Grid of plots 1x1, adding plot 1)
     ax = fig.add_subplot(111)
+
+
+    ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
+    ax.get_xaxis().set_major_formatter(
+        matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
     results = np.genfromtxt(filename, delimiter=' ') # pylab.loadtxt(filename, comments='*', delimiter=' ')
     numLines = results.shape[0]

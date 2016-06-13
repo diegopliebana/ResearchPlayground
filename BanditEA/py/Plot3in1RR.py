@@ -17,6 +17,7 @@ def errorfill(x, y, yerr, ls, color=None, alpha_fill=0.3, ax=None):
         ymin, ymax = yerr
 
     ax.plot(x, y, linestyle=ls, color=color)
+    pylab.ylim([0,250])
     ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill)
 
 tot_avg = []
@@ -31,7 +32,7 @@ tot_std_err = []
 
 filenames = ["../exp/resultsBanditRRNoise0_1.txt", "../exp/results1plus1RRNoise0_1.txt"]
 algs = ["Bandit EA Noise 0.0 (1)", "RMHC Noise 0.0 (1)"]
-output = ["../exp/BanditEARoyalRoad_0_1.pdf", "../exp/RMHCRoyalRoad_0_1.pdf"]
+output = ["../exp/BanditEARoyalRoad_0_1_div_dim.pdf", "../exp/RMHCRoyalRoad_0_1_div_dim.pdf"]
 titles = ["Bandit EA - Royal Road Problem", "RMHC - Royal Road Problem"]
 
 
@@ -87,13 +88,15 @@ for filename in filenames:
 
         if valid>1:
             legend.append(algs[f_idx] + " - Block size: " + str(blocks[l]))
-            errorfill(bandits, avg_block, stderr_block, '-', None, 0.3, ax)
+            avg_block_dv_dim = np.divide(avg_block,bandits)
+            stderr_block_dv_dim = np.divide(stderr_block,bandits)
+            errorfill(bandits, avg_block_dv_dim, stderr_block_dv_dim, '-', None, 0.3, ax)
 
 
     #plt.title('Bandit Based EA - Royal Road Problem')
     plt.title(titles[f_idx])
-    plt.xlabel('Dimensions')
-    plt.ylabel('Evaluations')
+    plt.xlabel('Dimension')
+    plt.ylabel('Evaluations/Dimension')
 
     plt.legend(legend, loc=2)
 

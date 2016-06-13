@@ -17,6 +17,7 @@ def errorfill(x, y, yerr, ls, color=None, alpha_fill=0.3, ax=None):
         ymin, ymax = yerr
 
     ax.plot(x, y, linestyle=ls, color=color)
+    pylab.ylim([0,35000])
     ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill)
 
 tot_avg = []
@@ -78,11 +79,11 @@ for i in range(num_algs):
     errorfill(steps[0:len(all_averages[i])], all_averages[i], all_stderr[i], line_styles[i], None, 0.3, ax)
     #ax.errorbar(steps , all_averages[i], yerr=all_stderr[i], label=algs[i], linestyle=line_styles[i], linewidth=2)
 
-# plt.title('Bandit Based EA - One Max Problem')
-plt.title('RMHC - One Max Problem')
+plt.title('Bandit Based EA - One Max Problem')
+#plt.title('RMHC - One Max Problem')
 # plt.title('One Max Problem')
 
-plt.xlabel('Dimensions')
+plt.xlabel('Dimension')
 plt.ylabel('Evaluations')
 
 plt.legend(algs, loc=2)

@@ -21,8 +21,8 @@ public class MaxSATTest {
 
 
     public static void main(String[] args) {
-        int nTrials = 10;
-        int nEvals = 1000000;
+        int nTrials = 1;
+        int nEvals = 10000000;
 
         String fileName = "benchmarks/MaxSAT/ms_random/max2sat/120v/s2v120c1200-1.cnf";
 
@@ -55,31 +55,34 @@ public class MaxSATTest {
 
     public static StatSummary runTrials(String fileName, int nTrials, int nEvals) {
         StatSummary ss = new StatSummary();
-        bestYets = new double[nTrials][nEvals];
+        //bestYets = new double[nTrials][nEvals];
         MaxSATTest test = new MaxSATTest(fileName);
-        System.out.println("Problem dimension="+test.nBandits);
+        System.out.println("Problem dimension "+test.nBandits + " optimum " + test.problem.getSAT().getNumClauses());
         for (int i=0; i<nTrials; i++) {
-            for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
-                test.run(nEvals, i);
-            if (test.success) {
-                ss.add(test.evalsSoFar);
-            }
+            //for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
+            test.run(nEvals, i);
+            //if (test.success) {
+            //    ss.add(test.evalsSoFar);
+            //}
+            ss.add(test.bestYet);
         }
         return ss;
 
     }
 
     public BanditArray run(int nEvals, int nTrial) {
+        long startTime = System.nanoTime();
         this.evalsSoFar = 0;
         this.genome = new BanditArray(nBandits);
         this.bestYet = evaluate(genome);
+        System.out.println("Problem initialised with " + bestYet);
         if(evalsSoFar != 1) {
             System.err.println("ERROR: The current evaluation number is wrongly counted.");
         }
         this.success = false;
         int iterations = 0;
 
-        bestYets[nTrial][iterations] = bestYet;
+        //bestYets[nTrial][iterations] = bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
@@ -99,16 +102,15 @@ public class MaxSATTest {
             }
             //System.out.println(bestYet);
 
-            bestYets[nTrial][iterations] = bestYet;
+            //bestYets[nTrial][iterations] = bestYet;
 
-            if (bestYet == this.problem.getSAT().getNumVariables()) {
+            if (bestYet == this.problem.getSAT().getNumClauses()) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");
                 success = true;
                 break;
             }
-
         }
-
+        System.out.println((System.nanoTime() - startTime) + " nanoTime");
 
         return genome;
     }

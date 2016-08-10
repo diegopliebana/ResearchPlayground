@@ -122,10 +122,10 @@ public class CNFIO {
         }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
-            boolean currentValue = true;
+            boolean currentValue = false;
             List<Integer> currentClause = sat.getClauses().get(i);
             for(Integer j: currentClause) {
-                currentValue &= (j>0) ? solution[j-1] : (!solution[-j-1]);
+                currentValue = (j>0) ? (currentValue || solution[j-1]) : (currentValue || (!solution[-j-1]));
             }
             if(currentValue)
                 nbTrues++;

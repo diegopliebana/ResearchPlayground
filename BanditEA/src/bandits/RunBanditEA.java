@@ -2,8 +2,6 @@ package bandits;
 
 import utilities.StatSummary;
 
-import java.util.ArrayList;
-
 /**
  * Created by dperez on 02/06/16.
  */
@@ -38,8 +36,8 @@ public class RunBanditEA
 
         int nEvals = nBandits * 1000;
 
-        StatSummary ss = BanditEA.runTrials(nBandits, nTrials, nEvals, noise, bSize, resampling);
-        BanditEA.dump(BanditEA.bestYets, nBandits);
+        StatSummary ss = BanditRMHC.runTrials(nBandits, nTrials, nEvals, noise, bSize, resampling);
+        BanditRMHC.dump(BanditRMHC.bestYets, nBandits);
         System.err.println(ss);
     }
 

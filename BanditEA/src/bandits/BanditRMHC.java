@@ -2,15 +2,12 @@ package bandits;
 
 import utilities.StatSummary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
 
 /**
  * Created by simonmarklucas on 27/05/2016.
  */
-public class BanditEA {
+public class BanditRMHC {
     // use these instance variables to track whether
     // a run is successful and the number of evaluations used
     boolean success;
@@ -37,15 +34,15 @@ public class BanditEA {
     public static StatSummary runTrials(int nBandits, int nTrials, int nEvals, float noise, int blockSize, int resampling) {
         StatSummary ss = new StatSummary();
         bestYets = new double[nTrials][nEvals];
-        BanditEA.blockSize = blockSize;
-        BanditEA.noiseStdDev = noise;
-        BanditEA.K = resampling;
+        BanditRMHC.blockSize = blockSize;
+        BanditRMHC.noiseStdDev = noise;
+        BanditRMHC.K = resampling;
 
         for (int i=0; i<nTrials; i++) {
 
             for(int j = 0; j < nEvals; ++j) bestYets[i][j] = nBandits; //init.
 
-            BanditEA ea = new BanditEA(nBandits);
+            BanditRMHC ea = new BanditRMHC(nBandits);
 
             ea.run(nEvals, i, noise);
             if (ea.success) {
@@ -57,7 +54,7 @@ public class BanditEA {
 
     }
 
-    public BanditEA(int nBandits) {
+    public BanditRMHC(int nBandits) {
         this.nBandits = nBandits;
         genome = new BanditArray(nBandits);
     }

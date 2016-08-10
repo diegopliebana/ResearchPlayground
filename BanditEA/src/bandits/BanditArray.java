@@ -51,7 +51,9 @@ public class BanditArray {
 
     }
 
-
+    public ArrayList<BanditGene> getGenome() {
+        return genome;
+    }
     public BanditGene selectRandomGene() {
         return genome.get(new Random().nextInt(genome.size()));
     }

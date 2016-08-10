@@ -88,4 +88,8 @@ public class BanditGene {
         return String.format("%d\t rescue: %.2f\t explore: %.2f\t urgency: %.2f",
                 x, rescue(), explore(nEvals), urgency(nEvals));
     }
+
+    public int getX() {
+        return this.x;
+    }
 }

@@ -13,14 +13,14 @@ public class MaxSATTest {
     boolean success;
     int evalsSoFar;
     int nBandits;
-    int bestYet;
+    double bestYet;
     BanditArray genome;
     static double bestYets[][];
 
 
     public static void main(String[] args) {
-        int nTrials = 10;
-        int nEvals = 1000000;
+        int nTrials = 1;
+        int nEvals = 100000;
 
         String fileName = "benchmarks/MaxSAT/ms_random/max2sat/120v/s2v120c1200-1.cnf";
 
@@ -40,13 +40,13 @@ public class MaxSATTest {
         this.problem = _problem;
     }
 
-    public int evaluate(BanditArray genome) {
+    public double evaluate(BanditArray genome) {
         evalsSoFar++;
         boolean[] solution = new boolean[nBandits];
         for(int i=0; i<genome.getGenome().size();i++) {
             solution[i] = (genome.getGenome().get(i).getX()>0) ? true : false;
         }
-        int fitness = this.problem.evaluate(solution);
+        double fitness = this.problem.evaluate(solution);
         return fitness;
     }
 
@@ -87,8 +87,8 @@ public class MaxSATTest {
             //BanditGene gene = genome.selectRandomGene();
 
             gene.mutate();
-            int after = evaluate(genome);
-            int delta = after - bestYet;
+            double after = evaluate(genome);
+            double delta = after - bestYet;
 
             gene.applyReward(delta);
             if (gene.replaceWithNewGene(delta)) {

@@ -1,8 +1,6 @@
 package bandits;
 
-import utilities.Picker;
-import utilities.StatSummary;
-
+import benchmarks.BinaryProblem;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -12,23 +10,25 @@ import java.util.Random;
 public class BanditOnePlusOneEA {
     // use these instance variables to track whether
     // a run is successful and the number of evaluations used
-    private boolean success;
+    private int evalsSoFar;
     private int nBandits; // Dimension
     private ArrayList<Double> urgencies; // Urgencies
-    static int K = 1;   // Resampling number
+    private ArrayList<BanditGene> genome;
     static Random random = new Random();
-    static double eps = 1e-6;
 
-    ArrayList<BanditGene> genome;
-
-    public BanditOnePlusOneEA(int nBandits) {
-        this.nBandits = nBandits;
-        init();
+    public BanditOnePlusOneEA(int _nBandits) {
+        init(_nBandits);
         assert (nBandits==genome.size());
         assert (nBandits==urgencies.size());
     }
 
+    public void init(int _nBandits) {
+        this.nBandits = _nBandits;
+        init();
+    }
+
     public void init() {
+        this.evalsSoFar = 0;
         genome = new ArrayList<>();
         urgencies = new ArrayList<>();
         for (int i=0; i<nBandits; i++) {
@@ -46,11 +46,15 @@ public class BanditOnePlusOneEA {
         return a;
     }
 
-    public void mutateGenome(int nEvals) {
-        double sum = updateUrgency(nEvals);
-        for (int i=0; i<genome.size(); i++)
-            if(random.nextDouble() > this.urgencies.get(i)/sum)
-                genome.get(i).mutate();
+    public ArrayList<BanditGene> mutateGenome() {
+        double sum = updateUrgency(this.evalsSoFar);
+        ArrayList<BanditGene> mutatedGenome = new ArrayList<>();
+        for (int i=0; i<genome.size(); i++) {
+            mutatedGenome.add(genome.get(i));
+            if (random.nextDouble() > this.urgencies.get(i) / sum)
+                mutatedGenome.get(i).mutate();
+        }
+        return mutatedGenome;
     }
 
     public double updateUrgency(int nEvals) {
@@ -79,11 +83,29 @@ public class BanditOnePlusOneEA {
         return solution;
     }
 
+    public double[] getDoubleSolution() {
+        double[] solution = new double[nBandits];
+        for(int i=0; i<genome.size();i++) {
+            solution[i] = (genome.get(i).getX()>0) ? 1.0 : 0.0;
+        }
+        return solution;
+    }
+
     public int[] getIntSolution() {
         int[] solution = new int[nBandits];
         for(int i=0; i<genome.size();i++) {
             solution[i] = (genome.get(i).getX()>0) ? 1 : 0;
         }
         return solution;
+    }
+
+    public void solve(BinaryProblem problem, int budget) {
+        problem.evaluate(getDoubleSolution());
+        this.evalsSoFar++;
+        while(evalsSoFar < budget) {
+            ArrayList<BanditGene> mutatedGenome = mutateGenome();
+            //double newFitness = problem.evaluate(mutatedGenome);
+            evalsSoFar++;
+        }
     }
 }

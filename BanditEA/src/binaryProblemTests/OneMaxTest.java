@@ -35,7 +35,7 @@ public class OneMaxTest {
     }
 
     public void solve(int budget) {
-        problem.evaluate(solver.getIntSolution());
+        problem.evaluate(solver.getDoubleSolution());
         this.evalsSoFar = 0;
 
         while(evalsSoFar < budget) {

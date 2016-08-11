@@ -1,7 +1,6 @@
 package binaryProblemTests;
 
-import bandits.BanditArray;
-import bandits.BanditOnePlusOneEA;
+import bandits.BanditEAWithProba;
 import benchmarks.classicBinaryProblems.OneMax;
 
 /**
@@ -10,7 +9,7 @@ import benchmarks.classicBinaryProblems.OneMax;
 public class OneMaxTest {
     private int d;
     private OneMax problem;
-    private BanditOnePlusOneEA solver;
+    private BanditEAWithProba solver;
     private boolean success;
     private int evalsSoFar;
     private int bestYet;
@@ -20,7 +19,7 @@ public class OneMaxTest {
     public OneMaxTest(int _d) {
         this.d = _d;
         this.problem = new OneMax(d);
-        this.solver = new BanditOnePlusOneEA(d);
+        this.solver = new BanditEAWithProba(d);
         this.success = false;
         this.evalsSoFar = 0;
         this.bestYet = 0;
@@ -28,7 +27,7 @@ public class OneMaxTest {
 
     public void init() {
         this.problem = new OneMax(d);
-        this.solver = new BanditOnePlusOneEA(d);
+        this.solver = new BanditEAWithProba(d);
         this.success = false;
         this.evalsSoFar = 0;
         this.bestYet = 0;

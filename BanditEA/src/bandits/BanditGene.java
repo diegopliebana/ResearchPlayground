@@ -92,4 +92,15 @@ public class BanditGene {
     public int getX() {
         return this.x;
     }
+
+    public BanditGene copy() {
+        BanditGene geneCopy = new BanditGene();
+        geneCopy.x = x;
+        geneCopy.xPrevious = xPrevious;
+        geneCopy.deltaRewards = new double[deltaRewards.length];
+        for(int i=0; i<deltaRewards.length;i++) {
+            geneCopy.deltaRewards[i] = deltaRewards[i];
+        }
+        return geneCopy;
+    }
 }

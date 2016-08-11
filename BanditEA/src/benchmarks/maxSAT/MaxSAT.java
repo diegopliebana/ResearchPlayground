@@ -124,7 +124,7 @@ public class MaxSAT implements BinaryProblem {
         }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
-            boolean currentValue = true;
+            boolean currentValue = false;
             List<Integer> currentClause = sat.getClauses().get(i);
             for(Integer j: currentClause) {
                 currentValue = (j>0) ? (currentValue || solution[j-1]) : (currentValue || (!solution[-j-1]));
@@ -148,7 +148,7 @@ public class MaxSAT implements BinaryProblem {
         }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
-            boolean currentValue = true;
+            boolean currentValue = false;
             List<Integer> currentClause = sat.getClauses().get(i);
             for(Integer j: currentClause) {
                 if(j>0)

@@ -1,5 +1,6 @@
-package bandits;
+package binaryProblemTests;
 
+import binaryProblemTests.BanditRMHCTest;
 import utilities.StatSummary;
 
 /**
@@ -36,8 +37,8 @@ public class RunBanditEA
 
         int nEvals = nBandits * 1000;
 
-        StatSummary ss = BanditRMHC.runTrials(nBandits, nTrials, nEvals, noise, bSize, resampling);
-        BanditRMHC.dump(BanditRMHC.bestYets, nBandits);
+        StatSummary ss = BanditRMHCTest.runTrials(nBandits, nTrials, nEvals, noise, bSize, resampling);
+        BanditRMHCTest.dump(BanditRMHCTest.bestYets, nBandits);
         System.err.println(ss);
     }
 

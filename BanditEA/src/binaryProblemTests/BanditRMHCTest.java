@@ -1,5 +1,7 @@
-package bandits;
+package binaryProblemTests;
 
+import bandits.BanditRHMC;
+import bandits.BanditGene;
 import utilities.StatSummary;
 
 import java.util.Random;
@@ -7,14 +9,14 @@ import java.util.Random;
 /**
  * Created by simonmarklucas on 27/05/2016.
  */
-public class BanditRMHC {
+public class BanditRMHCTest {
     // use these instance variables to track whether
     // a run is successful and the number of evaluations used
     boolean success;
     int trialsSoFar;
 
     int nBandits;
-    BanditArray genome;
+    BanditRHMC genome;
     static Random rand = new Random();
     static double noiseStdDev = 1.0;
     static int blockSize;
@@ -34,15 +36,15 @@ public class BanditRMHC {
     public static StatSummary runTrials(int nBandits, int nTrials, int nEvals, float noise, int blockSize, int resampling) {
         StatSummary ss = new StatSummary();
         bestYets = new double[nTrials][nEvals];
-        BanditRMHC.blockSize = blockSize;
-        BanditRMHC.noiseStdDev = noise;
-        BanditRMHC.K = resampling;
+        BanditRMHCTest.blockSize = blockSize;
+        BanditRMHCTest.noiseStdDev = noise;
+        BanditRMHCTest.K = resampling;
 
         for (int i=0; i<nTrials; i++) {
 
             for(int j = 0; j < nEvals; ++j) bestYets[i][j] = nBandits; //init.
 
-            BanditRMHC ea = new BanditRMHC(nBandits);
+            BanditRMHCTest ea = new BanditRMHCTest(nBandits);
 
             ea.run(nEvals, i, noise);
             if (ea.success) {
@@ -54,12 +56,12 @@ public class BanditRMHC {
 
     }
 
-    public BanditRMHC(int nBandits) {
+    public BanditRMHCTest(int nBandits) {
         this.nBandits = nBandits;
-        genome = new BanditArray(nBandits);
+        genome = new BanditRHMC(nBandits);
     }
 
-    public BanditArray run(int nEvals, int nTrial, float noise) {
+    public BanditRHMC run(int nEvals, int nTrial, float noise) {
 
         double bestYet = evaluate(genome);
         success = false;
@@ -190,28 +192,17 @@ public class BanditRMHC {
     }
 
 
-    // currently this is a One Max evaluation
-//    public double evaluate(BanditArray genome) {
-//        trialsSoFar++;
-//        double tot = 0;
-//        for (BanditGene bandit : genome.genome) {
-//            // directly access the current value field of each bandit
-//            tot += bandit.x;
-//        }
-//        return tot;
-//    }
-
 
     // block size MUST be a multiple of the genome length
-    public double evaluate(BanditArray genome) {
+    public double evaluate(BanditRHMC genome) {
         trialsSoFar++;
         double tot = 0;
         int ix = 0;
-        while (ix < genome.genome.size()) {
+        while (ix < genome.getGenome().size()) {
             // directly access the current value field of each bandit
             boolean block = true;
             for (int j=0; j<blockSize; j++) {
-                if (genome.genome.get(ix).x != 1)
+                if (genome.getGenome().get(ix).getX() != 1)
                     block = false;
                 ix++;
             }

@@ -1,12 +1,13 @@
 package binaryProblemTests;
 
-import bandits.BanditArray;
+import bandits.BanditRHMC;
 import bandits.BanditGene;
 import benchmarks.maxSAT.MaxSAT;
 import utilities.StatSummary;
 
-/**
- * Created by Jialin Liu on 09/08/2016.
+import java.io.File;
+/*
+ * * Created by Jialin Liu on 09/08/2016.
  */
 public class MaxSATTest {
     public MaxSAT problem;
@@ -14,17 +15,24 @@ public class MaxSATTest {
     int evalsSoFar;
     int nBandits;
     double bestYet;
-    BanditArray genome;
-    static double bestYets[][];
+    BanditRHMC genome;
+    //static double bestYets[][];
 
 
     public static void main(String[] args) {
         int nTrials = 1;
-        int nEvals = 100000;
+        int nEvals = 1000000;
 
-        String fileName = "benchmarks/MaxSAT/ms_random/max2sat/120v/s2v120c1200-1.cnf";
-
-        System.out.println(runTrials(fileName, nTrials, nEvals));
+        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
+        String[] everythingInThisDir = dir.list();
+        for (String fileName : everythingInThisDir) {
+            if(fileName.endsWith("cnf")) {
+                System.out.println(dir+"/"+fileName);
+                StatSummary[] ssArray = runTrials(dir+"/"+fileName, nTrials, nEvals);
+                System.out.println(ssArray[0]);
+                System.out.println(ssArray[1]);
+            }
+        }
     }
 
     public MaxSATTest(String fileName) {
@@ -40,7 +48,7 @@ public class MaxSATTest {
         this.problem = _problem;
     }
 
-    public double evaluate(BanditArray genome) {
+    public double evaluate(BanditRHMC genome) {
         evalsSoFar++;
         boolean[] solution = new boolean[nBandits];
         for(int i=0; i<genome.getGenome().size();i++) {
@@ -50,25 +58,32 @@ public class MaxSATTest {
         return fitness;
     }
 
-    public static StatSummary runTrials(String fileName, int nTrials, int nEvals) {
+    public static StatSummary[] runTrials(String fileName, int nTrials, int nEvals) {
+        StatSummary[] ssArray = new StatSummary[2];
         StatSummary ss = new StatSummary();
-        bestYets = new double[nTrials][nEvals];
+        StatSummary ssTime = new StatSummary();
+        //bestYets = new double[nTrials][nEvals];
         MaxSATTest test = new MaxSATTest(fileName);
-        System.out.println("Problem dimension="+test.nBandits);
+        System.out.println("Problem dimension "+test.nBandits + " optimum " + test.problem.getSAT().getNumClauses());
         for (int i=0; i<nTrials; i++) {
-            for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
-                test.run(nEvals, i);
-            if (test.success) {
-                ss.add(test.evalsSoFar);
-            }
+            //for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
+            long startTime = System.nanoTime();
+            test.run(nEvals, i);
+            //if (test.success) {
+            //    ss.add(test.evalsSoFar);
+            //}
+            long endTime = System.nanoTime();
+            ss.add(test.problem.getSAT().getNumClauses()-test.bestYet);
+            ssTime.add((endTime-startTime)/1000000);
         }
-        return ss;
-
+        ssArray[0] = ss;
+        ssArray[1] = ssTime;
+        return ssArray;
     }
 
-    public BanditArray run(int nEvals, int nTrial) {
+    public BanditRHMC run(int nEvals, int nTrial) {
         this.evalsSoFar = 0;
-        this.genome = new BanditArray(nBandits);
+        this.genome = new BanditRHMC(nBandits);
         this.bestYet = evaluate(genome);
         if(evalsSoFar != 1) {
             System.err.println("ERROR: The current evaluation number is wrongly counted.");
@@ -76,15 +91,15 @@ public class MaxSATTest {
         this.success = false;
         int iterations = 0;
 
-        bestYets[nTrial][iterations] = bestYet;
+        //bestYets[nTrial][iterations] = bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
             // Bandit-EA
-            BanditGene gene = genome.selectGeneToMutate(evalsSoFar);
+            //BanditGene gene = genome.selectGeneToMutate(evalsSoFar);
 
             // Simple 1+1
-            //BanditGene gene = genome.selectRandomGene();
+            BanditGene gene = genome.selectRandomGene();
 
             gene.mutate();
             double after = evaluate(genome);
@@ -96,7 +111,7 @@ public class MaxSATTest {
             }
             //System.out.println(bestYet);
 
-            bestYets[nTrial][iterations] = bestYet;
+            //bestYets[nTrial][iterations] = bestYet;
 
             if (bestYet == this.problem.getSAT().getNumVariables()) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");

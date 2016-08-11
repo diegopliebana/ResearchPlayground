@@ -88,4 +88,19 @@ public class BanditGene {
         return String.format("%d\t rescue: %.2f\t explore: %.2f\t urgency: %.2f",
                 x, rescue(), explore(nEvals), urgency(nEvals));
     }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public BanditGene copy() {
+        BanditGene geneCopy = new BanditGene();
+        geneCopy.x = x;
+        geneCopy.xPrevious = xPrevious;
+        geneCopy.deltaRewards = new double[deltaRewards.length];
+        for(int i=0; i<deltaRewards.length;i++) {
+            geneCopy.deltaRewards[i] = deltaRewards[i];
+        }
+        return geneCopy;
+    }
 }

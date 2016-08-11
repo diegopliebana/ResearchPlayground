@@ -1,28 +1,28 @@
-package maxsat;
+package binaryProblemTests;
 
-import bandits.BanditArray;
+import bandits.BanditRHMC;
 import bandits.BanditGene;
+import benchmarks.maxSAT.MaxSAT;
 import utilities.StatSummary;
 
-import java.nio.file.Files;
 import java.io.File;
-import java.nio.file.Paths;
-/**
- * Created by Jialin Liu on 09/08/2016.
+/*
+ * * Created by Jialin Liu on 09/08/2016.
  */
 public class MaxSATTest {
-    public CNFIO problem;
+    public MaxSAT problem;
     boolean success;
     int evalsSoFar;
     int nBandits;
-    int bestYet;
-    BanditArray genome;
+    double bestYet;
+    BanditRHMC genome;
     //static double bestYets[][];
 
 
     public static void main(String[] args) {
-        int nTrials = 100;
+        int nTrials = 1;
         int nEvals = 1000000;
+
         final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
         String[] everythingInThisDir = dir.list();
         for (String fileName : everythingInThisDir) {
@@ -41,21 +41,20 @@ public class MaxSATTest {
     }
 
     public void setSATProblem(String fileName) {
-        this.problem = new CNFIO(fileName);
+        this.problem = new MaxSAT(fileName);
     }
 
-    public void setSATProblem(CNFIO _problem) {
+    public void setSATProblem(MaxSAT _problem) {
         this.problem = _problem;
     }
 
-    public int evaluate(BanditArray genome) {
+    public double evaluate(BanditRHMC genome) {
         evalsSoFar++;
         boolean[] solution = new boolean[nBandits];
-        double tot = 0;
         for(int i=0; i<genome.getGenome().size();i++) {
             solution[i] = (genome.getGenome().get(i).getX()>0) ? true : false;
         }
-        int fitness = this.problem.evaluate(solution);
+        double fitness = this.problem.evaluate(solution);
         return fitness;
     }
 
@@ -74,20 +73,18 @@ public class MaxSATTest {
             //    ss.add(test.evalsSoFar);
             //}
             long endTime = System.nanoTime();
-            ss.add(test.bestYet);
+            ss.add(test.problem.getSAT().getNumClauses()-test.bestYet);
             ssTime.add((endTime-startTime)/1000000);
         }
         ssArray[0] = ss;
         ssArray[1] = ssTime;
         return ssArray;
-
     }
 
-    public BanditArray run(int nEvals, int nTrial) {
+    public BanditRHMC run(int nEvals, int nTrial) {
         this.evalsSoFar = 0;
-        this.genome = new BanditArray(nBandits);
+        this.genome = new BanditRHMC(nBandits);
         this.bestYet = evaluate(genome);
-        //System.out.println("Problem initialised with " + bestYet);
         if(evalsSoFar != 1) {
             System.err.println("ERROR: The current evaluation number is wrongly counted.");
         }
@@ -105,8 +102,8 @@ public class MaxSATTest {
             BanditGene gene = genome.selectRandomGene();
 
             gene.mutate();
-            int after = evaluate(genome);
-            int delta = after - bestYet;
+            double after = evaluate(genome);
+            double delta = after - bestYet;
 
             gene.applyReward(delta);
             if (gene.replaceWithNewGene(delta)) {
@@ -116,12 +113,15 @@ public class MaxSATTest {
 
             //bestYets[nTrial][iterations] = bestYet;
 
-            if (bestYet == this.problem.getSAT().getNumClauses()) {
+            if (bestYet == this.problem.getSAT().getNumVariables()) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");
                 success = true;
                 break;
             }
+
         }
+
+
         return genome;
     }
 }

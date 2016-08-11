@@ -1,227 +1,99 @@
 package bandits;
 
-import utilities.StatSummary;
+import benchmarks.BinaryProblem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
 
 /**
- * Created by simonmarklucas on 27/05/2016.
+ * Created by admin on 11/08/2016.
  */
-public class BanditEA {
+public abstract class BanditEA {
     // use these instance variables to track whether
     // a run is successful and the number of evaluations used
-    boolean success;
-    int trialsSoFar;
+    protected int nBandits; // Dimension
+    protected ArrayList<Double> urgencies;
+    protected ArrayList<BanditGene> genome;
+    static Random random = new Random();
+    static double eps = 1e-6;
 
-    int nBandits;
-    BanditArray genome;
-    static Random rand = new Random();
-    static double noiseStdDev = 1.0;
-    static int blockSize;
-    static int K = 1;
-
-    static double bestYets[][];
-
-
-    public static void main(String[] args) {
-        int numBandits = 100;
-        int nTrials = 30;
-        float noise = 0.0f;
-        int nEvals = 20;
-        System.out.println(runTrials(numBandits, nTrials, nEvals, noise, 8, 1));
+    public BanditEA() {
+        genome = new ArrayList<>();
+        urgencies = new ArrayList<>();
     }
 
-    public static StatSummary runTrials(int nBandits, int nTrials, int nEvals, float noise, int blockSize, int resampling) {
-        StatSummary ss = new StatSummary();
-        bestYets = new double[nTrials][nEvals];
-        BanditEA.blockSize = blockSize;
-        BanditEA.noiseStdDev = noise;
-        BanditEA.K = resampling;
+    public BanditEA(int _nBandits) {
+        init(_nBandits);
+        assert (nBandits==genome.size());
+        assert (nBandits==urgencies.size());
+    }
 
-        for (int i=0; i<nTrials; i++) {
+    public void init(int _nBandits) {
+        this.nBandits = _nBandits;
+        init();
+    }
 
-            for(int j = 0; j < nEvals; ++j) bestYets[i][j] = nBandits; //init.
-
-            BanditEA ea = new BanditEA(nBandits);
-
-            ea.run(nEvals, i, noise);
-            if (ea.success) {
-                ss.add(ea.trialsSoFar);
-            }
+    public void init() {
+        genome = new ArrayList<>();
+        urgencies = new ArrayList<>();
+        for (int i=0; i<nBandits; i++) {
+            genome.add(new BanditGene());
+            urgencies.add(0.0);
         }
-
-        return ss;
-
     }
 
-    public BanditEA(int nBandits) {
-        this.nBandits = nBandits;
-        genome = new BanditArray(nBandits);
-    }
+    public abstract ArrayList<BanditGene> mutateGenome(int evalsSoFar);
 
-    public BanditArray run(int nEvals, int nTrial, float noise) {
-
-        double bestYet = evaluate(genome);
-        success = false;
-        // will make 2*K trials each time around the loop
-        int evalsHist = 1;
-        double meanHist = bestYet;
-        trialsSoFar = 1;
-        int iterations = 0;
-
-        bestYets[nTrial][iterations] = bestYet;
-
-        while(trialsSoFar < nEvals){
-            iterations++;
-            // each evaluation, make a mutation
-            // measure the fitness
-            // and feed it back
-
-            // Jialin pointed out that the trials so far
-            // is actually twice the number of iterations
-            // but this is fixable to be the same in the case of
-
-
-            // Bandit-EA
-            BanditGene gene = genome.selectGeneToMutate(trialsSoFar);
-
-            // Simple 1+1
-            //BanditGene gene = genome.selectRandomGene();
-
-
-            /*  NOISE FREE */
-            double after = 0.0;
-            double delta = 0.0;
-            double afterNoisy = 0.0;
-            double beforeNoisy = 0.0;
-
-            if(noise < 0.01) {
-
-                gene.mutate();
-                after = evaluate(genome);
-                delta = after - bestYet;
-                //double noise = rand.nextGaussian() * noiseStdDev;
-                //delta += noise;
-                gene.applyReward(delta);
-                if (gene.replaceWithNewGene(delta)) {
-                    bestYet = after;
-                }
-
-                bestYet = Math.max(bestYet, after);
-
-            }else {
-
-                /*  NOISY CASE */
-                for(int i = 0; i < K; i++) {
-                    double before = evaluate(genome);
-                    double beforeNoisyIns = before + rand.nextGaussian() * noise;
-                    beforeNoisy += beforeNoisyIns;
-                }
-                beforeNoisy = (meanHist * evalsHist + beforeNoisy) / (evalsHist + K);
-
-                gene.mutate();
-
-                for(int i = 0; i < K; i++) {
-                    after = evaluate(genome);
-                    double afterNoisyIns = after + rand.nextGaussian() * noise;
-                    afterNoisy += afterNoisyIns;
-                }
-                afterNoisy /= (double)K;
-
-                delta = afterNoisy - beforeNoisy;
-
-                gene.applyReward(delta);
-                if(gene.replaceWithNewGene(delta)) {
-                    evalsHist = K;
-                    meanHist = afterNoisy;
-                    bestYet = after;
-                } else {
-                    meanHist = beforeNoisy;
-                    evalsHist+=K;
-                }
-
-            }
-
-            bestYets[nTrial][iterations] = bestYet;
-
-
-            //System.out.println(trialsSoFar + "\t " + bestYet);
-            // System.out.println(countOnes(genome.toArray()) + " \t " + Arrays.toString(genome.toArray()));
-
-            if (bestYet == nBandits) {
-                //System.out.println("Optimum found after " + trialsSoFar + " evals");
-                success = true;
-                break;
-            }
-
+    public int[] toArray() {
+        int[] a = new int[nBandits];
+        int i = 0;
+        for (BanditGene gene : genome) {
+            a[i++] = gene.x;
         }
+        return a;
+    }
 
 
+    public double updateUrgency(int evalsSoFar) {
+        double sum = 0.0;
+        for (int i=0; i<genome.size(); i++) {
+            double urgency = genome.get(i).urgency(evalsSoFar);
+            this.urgencies.set(i,urgency);
+            sum += urgency;
+        }
+        return sum;
+    }
+
+    public ArrayList<BanditGene> copyGenome() {
+        ArrayList<BanditGene> genomeCopy = new ArrayList<>();
+        for(BanditGene gene: genome) {
+            genomeCopy.add(gene.copy());
+        }
+        return genomeCopy;
+    }
+
+    public ArrayList<BanditGene> getGenome() {
         return genome;
     }
 
-    // this method is done as a sanity check to esnure
-    // that the algorithm is actually working and returns
-    // the correct array of values
-    public int countOnes(int[] a) {
-        int tot = 0;
-        for (int i=0; i<a.length; i++) {
-            tot += a[i];
-        }
-        return tot;
-    }
-
-    public static void dump(double bY[][], int nBandits)
-    {
-        boolean end = false;
-        for (int j = 0; !end && j < bY[0].length; ++j)
-        {
-            System.out.printf("%d ", j);
-            int perfectCount = 0;
-            for(int i = 0; i < bY.length; ++i) {
-                System.out.printf("%.2f ", bY[i][j]);
-                if(bY[i][j] == nBandits)
-                    perfectCount++;
-            }
-            if(perfectCount == bY.length)
-                end = true;
-            System.out.printf("\n");
-        }
+    public BanditGene selectRandomGene() {
+        return genome.get(new Random().nextInt(genome.size()));
     }
 
 
-    // currently this is a One Max evaluation
-//    public double evaluate(BanditArray genome) {
-//        trialsSoFar++;
-//        double tot = 0;
-//        for (BanditGene bandit : genome.genome) {
-//            // directly access the current value field of each bandit
-//            tot += bandit.x;
-//        }
-//        return tot;
-//    }
-
-
-    // block size MUST be a multiple of the genome length
-    public double evaluate(BanditArray genome) {
-        trialsSoFar++;
-        double tot = 0;
-        int ix = 0;
-        while (ix < genome.genome.size()) {
-            // directly access the current value field of each bandit
-            boolean block = true;
-            for (int j=0; j<blockSize; j++) {
-                if (genome.genome.get(ix).x != 1)
-                    block = false;
-                ix++;
-            }
-            if (block) {
-                tot += blockSize;
-            }
+    public boolean[] getBooleanSolution() {
+        boolean[] solution = new boolean[nBandits];
+        for(int i=0; i<genome.size();i++) {
+            solution[i] = (genome.get(i).getX()>0) ? true : false;
         }
-        return tot;
+        return solution;
+    }
+
+    public double[] getDoubleSolution() {
+        double[] solution = new double[nBandits];
+        for(int i=0; i<genome.size();i++) {
+            solution[i] = (genome.get(i).getX()>0) ? 1.0 : 0.0;
+        }
+        return solution;
     }
 }

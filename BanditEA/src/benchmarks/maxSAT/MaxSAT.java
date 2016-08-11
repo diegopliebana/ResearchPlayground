@@ -1,31 +1,33 @@
-package maxsat;
+package benchmarks.maxSAT;
+
+import benchmarks.BinaryProblem;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
  * Created by Jialin Liu on 09/08/2016.
  * This code is modified from http://kahina.org/trac/browser/trunk/src/org/kahina/logic/sat/io/cnf/DimacsCnfParser.java?rev=1349
  * Modified and commented by Jialin Liu
  */
-public class CNFIO {
+public class MaxSAT implements BinaryProblem {
     private CNFMaxSATInstance sat;
 
     public static void main(String[] args) {
-        CNFIO cnfIO = new CNFIO("benchmarks/MaxSAT/ms_random/max2sat/120v/s2v120c1200-1.cnf");
+        MaxSAT cnfIO = new MaxSAT("benchmarks/MaxSAT/ms_random/max2sat/120v/s2v120c1200-1.cnf");
         //System.out.println(cnfIO.sat.getNumClauses());
         boolean[] solution = new boolean[cnfIO.sat.getNumVars()];
         System.out.println(cnfIO.evaluate(solution));
     }
 
-    public CNFIO() {
+    public MaxSAT() {
         sat = new CNFMaxSATInstance();
     }
 
-    public CNFIO(String fileName) {
+    public MaxSAT(String fileName) {
         sat = parseCNFFile(fileName);
     }
 
@@ -114,8 +116,8 @@ public class CNFIO {
         return problem;
     }
 
-    public int evaluate(boolean[] solution) {
-        int nbTrues = 0;
+    public double evaluate(boolean[] solution) {
+        double nbTrues = 0.0;
         int nbVars= this.sat.getNumVars();
         if (solution.length != nbVars) {
             System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
@@ -128,8 +130,48 @@ public class CNFIO {
                 currentValue = (j>0) ? (currentValue || solution[j-1]) : (currentValue || (!solution[-j-1]));
             }
             if(currentValue)
-                nbTrues++;
+                nbTrues = nbTrues + 1;
         }
         return nbTrues;
+    }
+
+//    public double evaluate(double[] solution) {
+//        boolean[] newSolution = convertSolution(solution);
+//        return evaluate(newSolution);
+//    }
+
+    public double evaluate(double[] solution) {
+        double nbTrues = 0.0;
+        int nbVars= this.sat.getNumVars();
+        if (solution.length != nbVars) {
+            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+        }
+        int nbClause = this.sat.getNumClauses();
+        for(int i=0; i<nbClause; i++) {
+            boolean currentValue = false;
+            List<Integer> currentClause = sat.getClauses().get(i);
+            for(Integer j: currentClause) {
+                if(j>0)
+                    currentValue = (solution[j-1]>0) ? true : currentValue;
+                else if(j<0)
+                    currentValue = (solution[-j - 1]>0) ? currentValue : true;
+                else
+                    System.err.println("ERROR: Variable " + j + " with index 0.");
+            }
+            if(currentValue)
+                nbTrues = nbTrues + 1;
+        }
+        return nbTrues;
+    }
+
+    public boolean[] convertSolution(double[] solution) {
+        boolean[] newSolution = new boolean[solution.length];
+        for(int i=0; i<solution.length; i++){
+            if(solution[i]>0)
+                newSolution[i] = true;
+            else
+                newSolution[i] = false;
+        }
+        return newSolution;
     }
 }

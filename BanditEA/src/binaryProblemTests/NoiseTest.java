@@ -1,4 +1,4 @@
-package bandits;
+package binaryProblemTests;
 
 import java.util.Random;
 

@@ -21,7 +21,7 @@ public class MaxSATTest {
 
     public static void main(String[] args) {
         int nTrials = 1;
-        int nEvals = 20000;
+        int nEvals = 500000;
 
         final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
         String[] everythingInThisDir = dir.list();
@@ -98,7 +98,7 @@ public class MaxSATTest {
             // Bandit-EA
             BanditGene gene = genome.selectGeneToMutate(evalsSoFar);
 
-            // Simple RMHC
+            // Simple 1+1
             //BanditGene gene = genome.selectRandomGene();
 
             gene.mutate();

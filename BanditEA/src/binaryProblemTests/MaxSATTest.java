@@ -16,12 +16,12 @@ public class MaxSATTest {
     int nBandits;
     double bestYet;
     BanditRHMC genome;
-    //static double bestYets[][];
+    static Pair bestYets[][];
 
 
     public static void main(String[] args) {
         int nTrials = 1;
-        int nEvals = 1000000;
+        int nEvals = 500000;
 
         final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
         String[] everythingInThisDir = dir.list();
@@ -96,10 +96,10 @@ public class MaxSATTest {
         while(evalsSoFar < nEvals){
             iterations++;
             // Bandit-EA
-            //BanditGene gene = genome.selectGeneToMutate(evalsSoFar);
+            BanditGene gene = genome.selectGeneToMutate(evalsSoFar);
 
             // Simple 1+1
-            BanditGene gene = genome.selectRandomGene();
+            //BanditGene gene = genome.selectRandomGene();
 
             gene.mutate();
             double after = evaluate(genome);

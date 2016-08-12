@@ -52,7 +52,7 @@ public class BanditGene {
     }
 
     public double urgency(int nEvals) {
-        return rescue() + explore(nEvals);
+        return rescue()/1200 + explore(nEvals);
     }
 
 
@@ -67,6 +67,7 @@ public class BanditGene {
     // standard UCB Explore term
     // consider modifying a value that's not been changed much yet
     public double explore(int nEvals) {
+        //System.out.println(k * Math.sqrt(Math.log(nEvals + 1) / (nMutations)));
         return k * Math.sqrt(Math.log(nEvals + 1) / (nMutations));
     }
 

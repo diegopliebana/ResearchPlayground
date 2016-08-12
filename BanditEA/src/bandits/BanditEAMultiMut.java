@@ -39,25 +39,25 @@ public class BanditEAMultiMut extends BanditEA {
         return mutatedGenome;
     }
 
-    public ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar) {
-        int n = random.nextInt(K) + 1;
-        PriorityQueue<Pair<Double,Integer>> selected = new PriorityQueue<>(n);
-        int[] selectedIdx = new int[n];
-        int i = 0;
-        for(BanditGene gene : genome) {
-            selected.offer(gene.urgency(evalsSoFar) + eps * random.nextDouble());
-            if(selected.size()>n) {
-                selected.poll();
-                selectedIdx[]
-            }
-        }
-        Picker<BanditGene> picker = new Picker<>();
-        for (BanditGene gene : genome) {
-            picker.add(gene.urgency(evalsSoFar) + eps * random.nextDouble(), gene);
-        }
-        //System.out.println(picker.getBestScore());
-        return picker.getBest();
-
-    }
+//    public ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar) {
+//        int n = random.nextInt(K) + 1;
+//        PriorityQueue<Pair<Double,Integer>> selected = new PriorityQueue<>(n);
+//        int[] selectedIdx = new int[n];
+//        int i = 0;
+//        for(BanditGene gene : genome) {
+//            selected.offer(gene.urgency(evalsSoFar) + eps * random.nextDouble());
+//            if(selected.size()>n) {
+//                selected.poll();
+//                selectedIdx[]
+//            }
+//        }
+//        Picker<BanditGene> picker = new Picker<>();
+//        for (BanditGene gene : genome) {
+//            picker.add(gene.urgency(evalsSoFar) + eps * random.nextDouble(), gene);
+//        }
+//        //System.out.println(picker.getBestScore());
+//        return picker.getBest();
+//
+//    }
 }
 

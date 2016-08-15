@@ -16,7 +16,7 @@ public class MaxSATTest {
     int nBandits;
     double bestYet;
     BanditRHMC genome;
-    static Pair bestYets[][];
+    static double bestYets[][];
 
 
     public static void main(String[] args) {
@@ -62,11 +62,11 @@ public class MaxSATTest {
         StatSummary[] ssArray = new StatSummary[2];
         StatSummary ss = new StatSummary();
         StatSummary ssTime = new StatSummary();
-        //bestYets = new double[nTrials][nEvals];
+        bestYets = new double[nTrials][nEvals];
         MaxSATTest test = new MaxSATTest(fileName);
         System.out.println("Problem dimension "+test.nBandits + " optimum " + test.problem.getSAT().getNumClauses());
         for (int i=0; i<nTrials; i++) {
-            //for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
+            for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
             long startTime = System.nanoTime();
             test.run(nEvals, i);
             //if (test.success) {
@@ -91,7 +91,7 @@ public class MaxSATTest {
         this.success = false;
         int iterations = 0;
 
-        //bestYets[nTrial][iterations] = bestYet;
+        bestYets[nTrial][iterations] = bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
@@ -108,10 +108,12 @@ public class MaxSATTest {
             gene.applyReward(delta);
             if (gene.replaceWithNewGene(delta)) {
                 bestYet = after;
-            }
-            //System.out.println(bestYet);
 
-            //bestYets[nTrial][iterations] = bestYet;
+            }
+            if(delta>0)
+                System.out.println(this.problem.getSAT().getNumClauses()-bestYet);
+
+            bestYets[nTrial][iterations] = bestYet;
 
             if (bestYet == this.problem.getSAT().getNumVariables()) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");

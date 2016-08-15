@@ -1,0 +1,377 @@
+ min = 9.0
+ max = 883.0
+ ave = 200.62
+ sd  = 173.2350992032492
+ se  = 17.32350992032492
+ sum  = 20062.0
+ sumsq  = 6995868.0
+ n   = 100
+
+ min = 41.0
+ max = 881.0
+ ave = 219.16
+ sd  = 168.18788916151502
+ se  = 16.8187889161515
+ sum  = 21916.0
+ sumsq  = 7603540.0
+ n   = 100
+
+ min = 25.0
+ max = 649.0
+ ave = 212.56
+ sd  = 142.37880332536733
+ se  = 14.237880332536733
+ sum  = 21256.0
+ sumsq  = 6525076.0
+ n   = 100
+
+ min = 17.0
+ max = 1481.0
+ ave = 279.56
+ sd  = 199.72467513701417
+ se  = 19.972467513701417
+ sum  = 27956.0
+ sumsq  = 1.1764484E7
+ n   = 100
+
+ min = 61.0
+ max = 1021.0
+ ave = 312.1
+ sd  = 188.1590504940654
+ se  = 18.815905049406542
+ sum  = 31210.0
+ sumsq  = 1.324562E7
+ n   = 100
+
+ min = 61.0
+ max = 1481.0
+ ave = 470.4
+ sd  = 258.628160207904
+ se  = 25.862816020790397
+ sum  = 47040.0
+ sumsq  = 2.874958E7
+ n   = 100
+
+ min = 201029.0
+ max = 994541.0
+ ave = 509281.36363636365
+ sd  = 266999.02044736897
+ se  = 80503.23365603203
+ sum  = 5602095.0
+ sumsq  = 3.565927350019E12
+ n   = 11
+
+ min = 885.0
+ max = 940181.0
+ ave = 159922.41414141413
+ sd  = 163674.28701833222
+ se  = 16449.884783901383
+ sum  = 1.5832319E7
+ sumsq  = 5.157291354571E12
+ n   = 99
+
+ min = 1219.0
+ max = 129835.0
+ ave = 24247.36
+ sd  = 27813.51824131568
+ se  = 2781.351824131568
+ sum  = 2424736.0
+ sumsq  = 1.35379034596E11
+ n   = 100
+
+ min = 1193.0
+ max = 40161.0
+ ave = 10962.2
+ sd  = 9571.997973888274
+ se  = 957.1997973888274
+ sum  = 1096220.0
+ sumsq  = 2.108767426E10
+ n   = 100
+
+ min = 1331.0
+ max = 27621.0
+ ave = 5969.7
+ sd  = 4291.772644763867
+ se  = 429.1772644763867
+ sum  = 596970.0
+ sumsq  = 5.38724374E9
+ n   = 100
+
+ min = 1701.0
+ max = 10641.0
+ ave = 4640.0
+ sd  = 1979.9038340079026
+ se  = 197.99038340079025
+ sum  = 464000.0
+ sumsq  = 2.5410419E9
+ n   = 100
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = 101935.0
+ max = 746587.0
+ ave = 392115.4
+ sd  = 218452.01379158764
+ se  = 69080.59230319323
+ sum  = 3921154.0
+ sumsq  = 1.967036410138E12
+ n   = 10
+
+ min = 6425.0
+ max = 969625.0
+ ave = 348076.32584269665
+ sd  = 290300.88430469134
+ se  = 30771.83219269444
+ sum  = 3.0978793E7
+ sumsq  = 1.8199149548153E13
+ n   = 89
+
+ min = 3901.0
+ max = 373041.0
+ ave = 66387.1
+ sd  = 57175.0364735124
+ se  = 5717.50364735124
+ sum  = 6638710.0
+ sumsq  = 7.6435419942E11
+ n   = 100
+
+ min = 5361.0
+ max = 43481.0
+ ave = 12738.8
+ sd  = 5847.885844344506
+ se  = 584.7885844344506
+ sum  = 1273880.0
+ sumsq  = 1.961328166E10
+ n   = 100
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = 149771.0
+ max = 943551.0
+ ave = 546661.0
+ sd  = 561287.2207702576
+ se  = 396889.99999999994
+ sum  = 1093322.0
+ sumsq  = 9.12719842042E11
+ n   = 2
+
+ min = 21701.0
+ max = 323921.0
+ ave = 78362.2
+ sd  = 52287.29801681274
+ se  = 5228.729801681274
+ sum  = 7836220.0
+ sumsq  = 8.8472563074E11
+ n   = 100
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = 53341.0
+ max = 892721.0
+ ave = 475603.3333333333
+ sd  = 240654.1759339806
+ se  = 31068.320519585883
+ sum  = 2.85362E7
+ sumsq  = 1.698886335194E13
+ n   = 60
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = 157221.0
+ max = 462141.0
+ ave = 279514.3333333333
+ sd  = 161164.93084208283
+ se  = 93048.61620560395
+ sum  = 838543.0
+ sumsq  = 2.86333057483E11
+ n   = 3
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0
+
+ min = Infinity
+ max = -Infinity
+ ave = NaN
+ sd  = NaN
+ se  = NaN
+ sum  = 0.0
+ sumsq  = 0.0
+ n   = 0

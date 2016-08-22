@@ -23,7 +23,9 @@ public class BanditRHMC extends BanditEA {
         return previousGenome;
     }
 
-    public BanditGene selectGeneToMutate(int evalsSoFar) {
+    @Override
+    public ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar) {
+        ArrayList<BanditGene> selectedGenes = new ArrayList<>();
         Picker<BanditGene> picker = new Picker<>();
         for (BanditGene gene : genome) {
             // break ties with small random values
@@ -31,7 +33,9 @@ public class BanditRHMC extends BanditEA {
             picker.add(gene.urgency(evalsSoFar) + eps * random.nextDouble(), gene);
         }
         //System.out.println(picker.getBestScore());
-        return picker.getBest();
+        selectedGenes.add(picker.getBest());
+        assert(selectedGenes.size()==1);
+        return selectedGenes;
 
     }
 }

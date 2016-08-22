@@ -25,7 +25,7 @@ public class BanditGene {
 
     // start all at one to avoid div zero
     int nMutations = 1;
-    static double k = 500;
+    static double k = 1;
 
     Integer xPrevious;
 
@@ -75,6 +75,7 @@ public class BanditGene {
     public void applyReward(double delta) {
         deltaRewards[x] += delta;
         deltaRewards[xPrevious] -= delta;
+        replaceWithNewGene(delta);
     }
 
     public boolean replaceWithNewGene(double delta) {
@@ -103,5 +104,9 @@ public class BanditGene {
             geneCopy.deltaRewards[i] = deltaRewards[i];
         }
         return geneCopy;
+    }
+
+    public static double getExplorationFactor() {
+        return k;
     }
 }

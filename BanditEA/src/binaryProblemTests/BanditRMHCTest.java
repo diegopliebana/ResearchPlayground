@@ -1,9 +1,11 @@
 package binaryProblemTests;
 
+import bandits.BanditEA;
 import bandits.BanditRHMC;
 import bandits.BanditGene;
 import utilities.StatSummary;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -16,7 +18,7 @@ public class BanditRMHCTest {
     int trialsSoFar;
 
     int nBandits;
-    BanditRHMC genome;
+    BanditEA genome;
     static Random rand = new Random();
     static double noiseStdDev = 1.0;
     static int blockSize;
@@ -56,14 +58,15 @@ public class BanditRMHCTest {
 
     }
 
+
     public BanditRMHCTest(int nBandits) {
         this.nBandits = nBandits;
         genome = new BanditRHMC(nBandits);
     }
 
-    public BanditRHMC run(int nEvals, int nTrial, float noise) {
+    public BanditEA run(int nEvals, int nTrial, float noise) {
 
-        double bestYet = evaluate(genome);
+        double bestYet = evaluate();
         success = false;
         // will make 2*K trials each time around the loop
         int evalsHist = 1;
@@ -85,7 +88,7 @@ public class BanditRMHCTest {
 
 
             // Bandit-EA
-            BanditGene gene = genome.selectGeneToMutate(trialsSoFar);
+            ArrayList<BanditGene> genes = genome.selectGeneToMutate(trialsSoFar);
 
             // Simple 1+1
             //BanditGene gene = genome.selectRandomGene();
@@ -98,15 +101,16 @@ public class BanditRMHCTest {
             double beforeNoisy = 0.0;
 
             if(noise < 0.01) {
-
-                gene.mutate();
-                after = evaluate(genome);
+                for(BanditGene gene: genes) {
+                    gene.mutate();
+                }
+                after = evaluate();
                 delta = after - bestYet;
                 //double noise = rand.nextGaussian() * noiseStdDev;
                 //delta += noise;
-                gene.applyReward(delta);
-                if (gene.replaceWithNewGene(delta)) {
-                    bestYet = after;
+                for(BanditGene gene: genes) {
+                    gene.applyReward(delta);
+                    gene.replaceWithNewGene(delta);
                 }
 
                 bestYet = Math.max(bestYet, after);
@@ -115,33 +119,33 @@ public class BanditRMHCTest {
 
                 /*  NOISY CASE */
                 for(int i = 0; i < K; i++) {
-                    double before = evaluate(genome);
+                    double before = evaluate();
                     double beforeNoisyIns = before + rand.nextGaussian() * noise;
                     beforeNoisy += beforeNoisyIns;
                 }
                 beforeNoisy = (meanHist * evalsHist + beforeNoisy) / (evalsHist + K);
-
-                gene.mutate();
-
+                for(BanditGene gene: genes) {
+                    gene.mutate();
+                }
                 for(int i = 0; i < K; i++) {
-                    after = evaluate(genome);
+                    after = evaluate();
                     double afterNoisyIns = after + rand.nextGaussian() * noise;
                     afterNoisy += afterNoisyIns;
                 }
                 afterNoisy /= (double)K;
 
-                delta = afterNoisy - beforeNoisy;
-
-                gene.applyReward(delta);
-                if(gene.replaceWithNewGene(delta)) {
+                delta = (afterNoisy - beforeNoisy)/genes.size();
+                for(BanditGene gene: genes) {
+                    gene.applyReward(delta);
+                }
+                if (delta>=0) {
                     evalsHist = K;
                     meanHist = afterNoisy;
                     bestYet = after;
                 } else {
                     meanHist = beforeNoisy;
-                    evalsHist+=K;
+                    evalsHist += K;
                 }
-
             }
 
             bestYets[nTrial][iterations] = bestYet;
@@ -157,8 +161,6 @@ public class BanditRMHCTest {
             }
 
         }
-
-
         return genome;
     }
 
@@ -194,7 +196,7 @@ public class BanditRMHCTest {
 
 
     // block size MUST be a multiple of the genome length
-    public double evaluate(BanditRHMC genome) {
+    public double evaluate(){
         trialsSoFar++;
         double tot = 0;
         int ix = 0;

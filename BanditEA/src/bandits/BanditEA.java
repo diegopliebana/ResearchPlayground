@@ -43,6 +43,7 @@ public abstract class BanditEA {
     }
 
     public abstract ArrayList<BanditGene> mutateGenome(int evalsSoFar);
+    public abstract ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar);
 
     public int[] toArray() {
         int[] a = new int[nBandits];
@@ -79,6 +80,7 @@ public abstract class BanditEA {
     public BanditGene selectRandomGene() {
         return genome.get(new Random().nextInt(genome.size()));
     }
+
 
 
     public boolean[] getBooleanSolution() {

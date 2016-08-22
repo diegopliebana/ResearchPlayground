@@ -25,4 +25,19 @@ public class BanditEAWithProba extends BanditEA {
         return mutatedGenome;
     }
 
+    @Override
+    public ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar) {
+        // TODO
+        double sum = updateUrgency(evalsSoFar);
+        ArrayList<BanditGene> selectedGenes = new ArrayList<>();
+        // ArrayList<BanditGene> mutatedGenome = new ArrayList<>();
+        for (int i=0; i<genome.size(); i++) {
+            // mutatedGenome.add(genome.get(i));
+            if (random.nextDouble() > this.urgencies.get(i) / sum) {
+                // mutatedGenome.get(i).mutate();
+                selectedGenes.add(genome.get(i));
+            }
+        }
+        return selectedGenes;
+    }
 }

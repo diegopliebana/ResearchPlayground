@@ -39,4 +39,21 @@ public class BanditRHMC extends BanditEA {
         return selectedGenes;
 
     }
+
+    public int selectGeneIdxToMutate(int evalsSoFar) {
+        Picker<Integer> picker = new Picker<>();
+        int idx = 0;
+        for (BanditGene gene : genome) {
+            // break ties with small random values
+            // System.out.println(i++ + "\t " + gene.statusString(nEvals));
+            picker.add(gene.urgency(evalsSoFar) + eps * random.nextDouble(), idx);
+            idx++;
+        }
+        return picker.getBest();
+
+    }
+
+    public int selectRandomGeneIdx() {
+        return random.nextInt(this.nBandits);
+    }
 }

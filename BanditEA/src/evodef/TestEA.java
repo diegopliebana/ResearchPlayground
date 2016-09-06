@@ -1,8 +1,6 @@
 package evodef;
 
 import bandits.MBanditEA;
-import evomaze.ShortestPathTest;
-import ga.SimpleRMHC;
 import utilities.ElapsedTimer;
 import utilities.StatSummary;
 

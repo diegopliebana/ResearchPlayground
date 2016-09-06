@@ -164,6 +164,53 @@ public class MaxSAT implements BinaryProblem {
         return nbTrues;
     }
 
+    public double evaluate(int[] solution) {
+        double nbTrues = 0.0;
+        int nbVars= this.sat.getNumVars();
+        if (solution.length != nbVars) {
+            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+        }
+        int nbClause = this.sat.getNumClauses();
+        for(int i=0; i<nbClause; i++) {
+            boolean currentValue = false;
+            List<Integer> currentClause = sat.getClauses().get(i);
+            for(Integer j: currentClause) {
+                if(j>0)
+                    currentValue = (solution[j-1]>0) ? true : currentValue;
+                else if(j<0)
+                    currentValue = (solution[-j - 1]>0) ? currentValue : true;
+                else
+                    System.err.println("ERROR: Variable " + j + " with index 0.");
+            }
+            if(currentValue)
+                nbTrues = nbTrues + 1;
+        }
+        return nbTrues;
+    }
+
+    public double evaluateOnes(double[] solution) {
+        double fitness = 0.0;
+        int nbVars= this.sat.getNumVars();
+        if (solution.length != nbVars) {
+            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+        }
+        int nbClause = this.sat.getNumClauses();
+        for(int i=0; i<nbClause; i++) {
+            double currentValue = 0;
+            List<Integer> currentClause = sat.getClauses().get(i);
+            for(Integer j: currentClause) {
+                if(j>0)
+                    currentValue = (solution[j-1]>0) ? currentValue + 1 : currentValue;
+                else if(j<0)
+                    currentValue = (solution[-j - 1]>0) ? currentValue : currentValue + 1;
+                else
+                    System.err.println("ERROR: Variable " + j + " with index 0.");
+            }
+            fitness = fitness + currentValue;
+        }
+        return fitness;
+    }
+
     public boolean[] convertSolution(double[] solution) {
         boolean[] newSolution = new boolean[solution.length];
         for(int i=0; i<solution.length; i++){

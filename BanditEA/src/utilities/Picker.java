@@ -14,6 +14,7 @@ public class Picker<T> {
 
     T bestYet;
     Double bestScore;
+    int bestYetIdx;
     public int nItems;
     //
     int order;
@@ -23,6 +24,7 @@ public class Picker<T> {
 
     public Picker() {
         this(MAX_FIRST);
+        this.bestYetIdx = -1;
     }
 
     public Picker(int order) {
@@ -37,11 +39,13 @@ public class Picker<T> {
         if (bestYet == null) {
             bestScore = score;
             bestYet = value;
+            bestYetIdx = 0;
         } else {
             // System.out.println(order * score + " >? " + bestScore * order + " : " + (order * score > bestScore * order));
             if (order * score > bestScore * order) {
                 bestScore = score;
                 bestYet = value;
+                bestYetIdx = nItems;
             }
         }
         nItems++;
@@ -49,6 +53,10 @@ public class Picker<T> {
 
     public T getBest() {
         return bestYet;
+    }
+
+    public int getBestIdx() {
+        return bestYetIdx;
     }
 
     public Double getBestScore () {

@@ -76,5 +76,13 @@ public class MBanditEA implements EvoAlg {
 
         return genome.toArray();
     }
+
+    public int getNBandit() {
+        return genome.nBandits;
+    }
+
+    public MBanditArray getGenome() {
+        return genome;
+    }
 }
 

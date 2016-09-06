@@ -53,7 +53,7 @@ public class MBanditGene {
         banditMutate();
     }
 
-    public void banditMutate() {
+    public int banditMutate() {
         // having chosen this bandit, only the UCB terms
         // within this bandit are relevant (not the total across all bandits)
         Picker<Integer> picker = new Picker<>(Picker.MAX_FIRST);
@@ -74,8 +74,20 @@ public class MBanditGene {
         x = picker.getBest();
         armPulls[x]++;
         nPulls++;
+        return x;
     }
 
+    public boolean mutateTo(int idx) {
+        if(idx == x) {
+            return false;
+        } else {
+            xPrevious = x;
+            x = idx;
+            armPulls[x]++;
+            nPulls++;
+            return true;
+        }
+    }
 
     public double maxDelta() {
         StatSummary ss = new StatSummary();
@@ -122,6 +134,14 @@ public class MBanditGene {
     public String statusString(int nEvals) {
         return String.format("%d\t rescue: %.2f\t explore: %.2f\t urgency: %.2f",
                 x, rescue(), explore(nEvals), urgency(nEvals));
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getPreviousX() {
+        return xPrevious;
     }
 
 }

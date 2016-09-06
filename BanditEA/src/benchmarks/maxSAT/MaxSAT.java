@@ -174,4 +174,8 @@ public class MaxSAT implements BinaryProblem {
         }
         return newSolution;
     }
+
+    public CNFMaxSATInstance getSat() {
+        return sat;
+    }
 }

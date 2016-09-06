@@ -52,4 +52,24 @@ public class MBanditArray {
         return picker.getBest();
 
     }
+
+    public int selectGeneIdxToMutate(int nEvals) {
+
+        Picker<MBanditGene> picker = new Picker<>();
+
+        int i = 0;
+        for (MBanditGene gene : genome) {
+            // break ties with small random values
+            // System.out.println(i++ + "\t " + gene.statusString(nEvals));
+            picker.add(gene.urgency(nEvals) + eps * random.nextDouble(), gene);
+        }
+
+        // System.out.println(picker.getBestScore());
+        return picker.getBestIdx();
+
+    }
+
+    public MBanditGene getGene(int idx) {
+        return this.genome.get(idx);
+    }
 }

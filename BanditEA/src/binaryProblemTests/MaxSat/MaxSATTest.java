@@ -6,6 +6,9 @@ import bandits.BanditGene;
 import benchmarks.maxSAT.MaxSAT;
 import utilities.StatSummary;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 /*
@@ -37,9 +40,10 @@ public class MaxSATTest {
         }*/
         String fileName = "benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v/s2v120c1200-1.cnf";
         System.out.println(fileName);
-        StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals, 100);
+        StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals, 1);
         System.out.println(ssArray[0]);
         System.out.println(ssArray[1]);
+        dump(bestYets, "banditEA.txt");
     }
 
     public MaxSATTest(String fileName) {
@@ -108,7 +112,7 @@ public class MaxSATTest {
         this.success = false;
         int iterations = 0;
 
-        bestYets[nTrial][iterations] = bestYet;
+        bestYets[nTrial][iterations] = this.problem.getSAT().getNumClauses() - bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
@@ -116,13 +120,15 @@ public class MaxSATTest {
             ArrayList<BanditGene> genes = genome.selectGeneToMutate(evalsSoFar);
 
             // Simple 1+1
-            //BanditGene gene = genome.selectRandomGene();
+//            ArrayList<BanditGene> genes = new ArrayList<>();
+//            BanditGene g = genome.selectRandomGene();
+//            genes.add(g);
 
             for(BanditGene gene: genes)
                 gene.mutate();
             double after = evaluate();
-            // double delta = (after - bestYet)/genes.size();
-            double delta = (after - bestYet);
+            double delta = (after - bestYet)/genes.size();
+            //double delta = (after - bestYet);
 
             for(BanditGene gene: genes) {
                 gene.applyReward(delta);
@@ -132,19 +138,35 @@ public class MaxSATTest {
                 //System.out.println(this.problem.getSAT().getNumClauses() - bestYet);
             }
 
-            bestYets[nTrial][iterations] = bestYet;
+            bestYets[nTrial][iterations] = this.problem.getSAT().getNumClauses() - bestYet;
 
-            if (bestYet == this.problem.getSAT().getNumVariables() - 161) {
+            if (bestYet == this.problem.getSAT().getNumClauses() - 161) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");
                 success = true;
                 break;
             }
 
         }
-
-
         return genome;
     }
 
 
+    private static void dump(double[][] results, String filename)
+    {
+        try {
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filename)));
+            for (int i = 0; i < results.length; ++i) {
+                for (int j = 0; j < results[i].length; ++j) {
+                    writer.write(results[i][j] + ",");
+                }
+                writer.write("\n");
+            }
+            writer.close();
+        }catch(Exception e)
+        {
+            System.out.println("MEH: " + e.toString());
+            e.printStackTrace();
+        }
+    }
 }

@@ -29,7 +29,7 @@ public class MBanditGene {
 
     // start all at one to avoid div zero
     int nMutations = 1;
-    static double k = 10;
+    static double k = 1;
 
     Integer xPrevious;
 
@@ -77,15 +77,15 @@ public class MBanditGene {
         return x;
     }
 
-    public boolean mutateTo(int idx) {
+    public void mutateTo(int idx) {
         if(idx == x) {
-            return false;
+            System.err.println("ERROR: The mutated one is identical to the previous.");
+            assert(idx != x);
         } else {
             xPrevious = x;
             x = idx;
             armPulls[x]++;
             nPulls++;
-            return true;
         }
     }
 
@@ -144,4 +144,7 @@ public class MBanditGene {
         return xPrevious;
     }
 
+    public void setX(int _x) {
+        this.x = _x;
+    }
 }

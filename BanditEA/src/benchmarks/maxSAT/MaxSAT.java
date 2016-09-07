@@ -118,10 +118,10 @@ public class MaxSAT implements BinaryProblem {
 
     public double evaluate(boolean[] solution) {
         double nbTrues = 0.0;
-        int nbVars= this.sat.getNumVars();
-        if (solution.length != nbVars) {
-            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
-        }
+//        int nbVars= this.sat.getNumVars();
+//        if (solution.length != nbVars) {
+//            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+//        }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
             boolean currentValue = false;
@@ -142,10 +142,10 @@ public class MaxSAT implements BinaryProblem {
 
     public double evaluate(double[] solution) {
         double nbTrues = 0.0;
-        int nbVars= this.sat.getNumVars();
-        if (solution.length != nbVars) {
-            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
-        }
+//        int nbVars= this.sat.getNumVars();
+//        if (solution.length != nbVars) {
+//            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+//        }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
             boolean currentValue = false;
@@ -166,10 +166,10 @@ public class MaxSAT implements BinaryProblem {
 
     public double evaluate(int[] solution) {
         double nbTrues = 0.0;
-        int nbVars= this.sat.getNumVars();
-        if (solution.length != nbVars) {
-            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
-        }
+//        int nbVars= this.sat.getNumVars();
+//        if (solution.length != nbVars) {
+//            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+//        }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
             boolean currentValue = false;
@@ -190,10 +190,10 @@ public class MaxSAT implements BinaryProblem {
 
     public double evaluateOnes(double[] solution) {
         double fitness = 0.0;
-        int nbVars= this.sat.getNumVars();
-        if (solution.length != nbVars) {
-            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
-        }
+//        int nbVars= this.sat.getNumVars();
+//        if (solution.length != nbVars) {
+//            System.err.println("ERROR: The size of the solution is not correct! Expected length: " + nbVars + ".");
+//        }
         int nbClause = this.sat.getNumClauses();
         for(int i=0; i<nbClause; i++) {
             double currentValue = 0;
@@ -220,9 +220,5 @@ public class MaxSAT implements BinaryProblem {
                 newSolution[i] = false;
         }
         return newSolution;
-    }
-
-    public CNFMaxSATInstance getSat() {
-        return sat;
     }
 }

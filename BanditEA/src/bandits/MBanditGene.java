@@ -29,7 +29,7 @@ public class MBanditGene {
 
     // start all at one to avoid div zero
     int nMutations = 1;
-    static double k = 1;
+    static public double k = 10000;
 
     Integer xPrevious;
 

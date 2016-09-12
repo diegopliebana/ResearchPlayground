@@ -26,7 +26,7 @@ public class MaxSatClauseTest {
     static double bestYets[][];
 
     public static void main(String[] args) {
-        int nTrials = 10;
+        int nTrials = 100;
         int nEvals = 100000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
@@ -44,7 +44,7 @@ public class MaxSatClauseTest {
         StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals);
         System.out.println(ssArray[0]);
         System.out.println(ssArray[1]);
-        dump(bestYets, "mBanditEA.txt");
+        dump(bestYets, String.join("","MAXSAT2_C", Integer.toString((int)MBanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
     }
 
     public MaxSatClauseTest(String fileName) {
@@ -78,9 +78,8 @@ public class MaxSatClauseTest {
     // TODO this is the part to play with
     public double evaluate(double[] solution) {
         evalsSoFar++;
-        //double fitness = this.problem.sumClauseValue(solution);
-        //double fitness = this.problem.getProblem().evaluate(solution);
-        double fitness = this.problem.getNbTrueClauses(solution);
+        double fitness = this.problem.sumClauseValue(solution);
+        //double fitness = this.problem.getNbTrueClauses(solution);
         return fitness;
     }
 

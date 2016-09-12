@@ -52,7 +52,7 @@ public class BanditGene {
     }
 
     public double urgency(int nEvals) {
-        return rescue()/1200 + explore(nEvals);
+        return rescue() + explore(nEvals);
     }
 
 

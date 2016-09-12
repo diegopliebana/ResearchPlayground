@@ -10,6 +10,7 @@ public class Picker<T> {
         picker.add(1.1, 3);
         picker.add(5.0, 0);
         System.out.println(picker);
+        System.out.println(picker.bestYetIdx);
     }
 
     T bestYet;
@@ -53,10 +54,6 @@ public class Picker<T> {
 
     public T getBest() {
         return bestYet;
-    }
-
-    public int getBestIdx() {
-        return bestYetIdx;
     }
 
     public Double getBestScore () {

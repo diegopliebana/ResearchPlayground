@@ -79,7 +79,7 @@ public class MBanditGene {
 
     public void mutateTo(int idx) {
         if(idx == x) {
-            System.err.println("ERROR: The mutated one is identical to the previous.");
+            System.err.println("ERROR: The mutated one is identical to the current one: idx=" + idx + "; current x=" + x + "; previous x=" + xPrevious);
             assert(idx != x);
         } else {
             xPrevious = x;

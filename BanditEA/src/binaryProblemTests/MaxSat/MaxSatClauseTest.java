@@ -26,7 +26,7 @@ public class MaxSatClauseTest {
     static double bestYets[][];
 
     public static void main(String[] args) {
-        int nTrials = 100;
+        int nTrials = 10;
         int nEvals = 100000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
@@ -62,22 +62,25 @@ public class MaxSatClauseTest {
 
     // Initialise the optimiser
     public void setupBandit() {
+        // reset variable values and clause values
         this.problem.initVars();
+        // create a new banditEA
         this.genome = new MBanditEA();
         this.genome.init(problem);
         this.nBandits = this.genome.getNBandit();
+        // get the current variable indices in the truth table -> current values of the bandits
         int[] indices = this.problem.getIndicesInTable();
         for(int i=0; i<this.nBandits; i++) {
-            MBanditGene gene = this.genome.getGenome().getGene(i);
-            gene.setX(indices[i]);
+            this.genome.getGenome().getGene(i).setX(indices[i]); // setup the current value
         }
     }
 
     // TODO this is the part to play with
     public double evaluate(double[] solution) {
         evalsSoFar++;
-        double fitness = this.problem.sumClauseValue(solution);
+        //double fitness = this.problem.sumClauseValue(solution);
         //double fitness = this.problem.getProblem().evaluate(solution);
+        double fitness = this.problem.getNbTrueClauses(solution);
         return fitness;
     }
 
@@ -87,43 +90,62 @@ public class MaxSatClauseTest {
 
     // Mutate the related genes
     public ArrayList<Integer> mutateRelatedGenes(int idxClause) {
-        ArrayList<Integer> relatedGenesIndices = new ArrayList<>();
         // The selected mutated gene
         MBanditGene gene = genome.getGenome().getGene(idxClause);
         // Modified variables indices
         ArrayList<Integer> modifiedVars = this.problem.getModifiedVarIdx(idxClause, gene.getPreviousX(), gene.getX());
         // Update the modified variables
-        double[] newSolution = this.problem.getVariables();
+        //double[] newSolution = this.problem.getVariables();
+        //System.out.println("modifiedVars" + modifiedVars.toString());
+
         for(Integer idxVar: modifiedVars) {
-            newSolution[idxVar] = 1 - newSolution[idxVar];
+            //System.out.println("newSolution[" + idxVar+ "]=" + this.problem.getNewVariables()[idxVar]);
+            this.problem.flip(this.problem.getNewVariables(), idxVar);
+            //System.out.println("newSolution[" + idxVar+ "]=" + this.problem.getNewVariables()[idxVar]);
         }
 
         // Save the updated variables, newClauseValues is updated
-        this.problem.setNewVariables(newSolution);
+        this.problem.setNewVariables(this.problem.getNewVariables());
 
         // Find the related clauses
         ArrayList<Integer> modifiedGenes = this.problem.getModifiedClauses(idxClause, modifiedVars);
         // Mutate the related genes (clauses)
         for(int idxGene: modifiedGenes) {
+            //System.out.println("modifiedGene idx=" + idxGene);
             List<Integer> currentClause = this.problem.getClauseAt(idxGene);
             double[] newPair = new double[2];
             assert(currentClause.size()==2);
             for (int i = 0; i < 2; i++) {
                 int value = currentClause.get(i);
                 if (value > 0)
-                    newPair[i] = newSolution[value-1];
+                    newPair[i] = this.problem.getNewVariables()[value-1];
                 else if (value < 0)
-                    newPair[i] = 1-newSolution[-value-1];
+                    newPair[i] = 1-this.problem.getNewVariables()[-value-1];
                 else
                     System.err.println("ERROR: Variable " + value + " with index 0.");
             }
+
+            double[] pair = new double[2];
+            assert(currentClause.size()==2);
+            for (int i = 0; i < 2; i++) {
+                int value = currentClause.get(i);
+                if (value > 0)
+                    pair[i] = this.problem.getVariables()[value-1];
+                else if (value < 0)
+                    pair[i] = 1-this.problem.getVariables()[-value-1];
+                else
+                    System.err.println("ERROR: Variable " + value + " with index 0.");
+            }
+
+            //System.out.println(pair[0] + " " + pair[1] + "    " + newPair[0] + " " + newPair[1]);
             // Find the index of new entry
+            int mutateFrom = this.problem.getIdxInTable(pair);
             int mutateTo = this.problem.getIdxInTable(newPair);
+            //System.out.println("Mutate from "+ mutateFrom + " to " + mutateTo);
             MBanditGene currentGene = genome.getGenome().getGene(idxGene);
             currentGene.mutateTo(mutateTo);
-            relatedGenesIndices.add(idxGene);
         }
-        return relatedGenesIndices;
+        return modifiedGenes;
     }
 
     // Run several trials
@@ -166,7 +188,7 @@ public class MaxSatClauseTest {
 
     // Run one trial
     public MBanditEA run(int nEvals, int nTrial) {
-        // Reset the optimiser
+        // Reset the optimiser and initial solution
         setupBandit();
 
         this.success = false;
@@ -207,8 +229,14 @@ public class MaxSatClauseTest {
                     genome.getGenome().getGene(idx).applyReward(delta);
                     //genome.getGenome().getGene(idx).applyReward(delta/(1+relatedGenesIndices.size()));
                 }
+            } else {
+                this.problem.resetNewVariables();
             }
+
             gene.revertOrKeep(delta);
+            for(int idx: relatedGenesIndices) {
+                genome.getGenome().getGene(idx).revertOrKeep(delta);
+            }
             bestYets[nTrial][iterations] = getOptimalValue();
         }
 

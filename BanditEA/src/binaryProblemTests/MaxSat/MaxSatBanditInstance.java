@@ -21,8 +21,9 @@ public class MaxSatBanditInstance implements SearchSpace {
     private int nbClauses;
     private double[] variables;
     private double[] newVariables;  // after mutation
-    private  double[] clauseValues;
-    private  double[] newClauseValues;
+    private double[] clauseValues;
+    private double[] newClauseValues;
+    private int[][] varsInClauses;
     public static Random rdm = new Random();
 
     // Lookup table: first variable, second variable, clause value, nb of ones
@@ -41,15 +42,16 @@ public class MaxSatBanditInstance implements SearchSpace {
         this.newClauseValues = new double[nbClauses];
         this.variables = new double[nbVars];
         this.newVariables = new double[nbVars];
+        this.varsInClauses = new int[nbClauses][2];
         // only call once
-        setupReferencesInClauses();
+        setupReferencesAndVarsInClauses();
         // call before every run
         initVars();
     }
 
     // Set up the dependencies between clauses
     // Each row i save the indices of clauses which have the i^th variable
-    public void setupReferencesInClauses() {
+    public void setupReferencesAndVarsInClauses() {
         this.references = new ArrayList<>();
         for(int i=0; i<this.sat.getSAT().getNumVariables(); i++) {
             this.references.add(new ArrayList());
@@ -57,13 +59,20 @@ public class MaxSatBanditInstance implements SearchSpace {
         assert(this.references.size() == this.sat.getSAT().getNumVariables());
         for (int i=0; i<nbClauses; i++) {
             List<Integer> currentClause = this.sat.getSAT().getClauses().get(i);
-            for (Integer j : currentClause) {
-                if (j > 0)
-                    this.references.get(j-1).add(i);
-                else if (j < 0)
-                    this.references.get(-j-1).add(i);
-                else
-                    System.err.println("ERROR: Variable " + j + " with index 0.");
+            assert(currentClause.size()==2);
+            for (int k=0; k<currentClause.size(); k++) {
+                int j = currentClause.get(k);
+                if (j > 0) {
+                    this.references.get(j - 1).add(i);
+                    this.varsInClauses[i][k] = j;
+                }
+                else if (j < 0) {
+                    this.references.get(-j - 1).add(i);
+                    this.varsInClauses[i][k] = j;
+                }
+                else {
+                    System.err.println("ERROR setupReferencesAndVarsInClauses: Variable " + j + " with index 0.");
+                }
             }
         }
     }
@@ -74,25 +83,26 @@ public class MaxSatBanditInstance implements SearchSpace {
             variables[i] = rdm.nextInt(2);
         }
         clauseValues = convertVariablesToClause(this.variables);
+        resetNewVariables();
     }
 
     // Update the clause values using the variables
     public double[] convertVariablesToClause(double[] vars) {
-        double[] values = new double[nbClauses];
-        for (int i = 0; i < values.length; i++) {
-            double currentValue = 0;
-            List<Integer> currentClause = this.sat.getSAT().getClauses().get(i);
+        double[] clauses = new double[nbClauses];
+        for (int i = 0; i < clauses.length; i++) {
+            double currentClauseValue = 0;
+            int[] currentClause = varsInClauses[i];
             for(Integer j: currentClause) {
                 if(j>0)
-                    currentValue = (vars[j-1]>0) ? currentValue + 1 : currentValue;
+                    currentClauseValue = (vars[j-1]>0) ? currentClauseValue + 1 : currentClauseValue;
                 else if(j<0)
-                    currentValue = (vars[-j-1]>0) ? currentValue : currentValue + 1;
+                    currentClauseValue = (vars[-j-1]<0) ? currentClauseValue + 1 : currentClauseValue;
                 else
-                    System.err.println("ERROR: Variable " + j + " with index 0.");
+                    System.err.println("ERROR convertVariablesToClause: Variable " + j + " with index 0.");
             }
-            values[i] = currentValue;
+            clauses[i] = currentClauseValue;
         }
-        return values;
+        return clauses;
     }
 
     // Return the sum of all clauses values
@@ -105,7 +115,7 @@ public class MaxSatBanditInstance implements SearchSpace {
         return sum;
     }
 
-    public int getNbTrueClause() {
+    public int getNbTrueClauses() {
         int sum = 0;
         for (int i=0; i<this.clauseValues.length; i++) {
             sum = this.clauseValues[i]>0 ? sum+1 : sum;
@@ -113,30 +123,50 @@ public class MaxSatBanditInstance implements SearchSpace {
         return sum;
     }
 
+    public int getNbTrueClauses(double[] vars){
+        double[] clauses = convertVariablesToClause(vars);
+        int sum = 0;
+        for (int i=0; i<clauses.length; i++) {
+            sum = clauses[i]>0 ? sum+1 : sum;
+        }
+        return sum;
+    }
+
     public int optimalValue() {
-        return (this.nbClauses - getNbTrueClause());
+        return (this.nbClauses - getNbTrueClauses());
     }
 
     // Return the indices of variables in the given clause
-    public List<Integer> getIdxVarsInClause(int idxClause) {
-        return this.sat.getSAT().getClauses().get(idxClause);
+    public ArrayList<Integer> getIdxVarsInClause(int idxClause) {
+        ArrayList<Integer> indices = new ArrayList<>();
+        int[] currentClause = varsInClauses[idxClause];
+        for(int j: currentClause){
+            if(j>0) {
+                indices.add(j-1);
+            } else if(j<0) {
+                indices.add(-j-1);
+            } else {
+                System.err.println("ERROR getIdxVarsInClause: Variable " + j + " with index 0.");
+            }
+        }
+        return indices;
     }
 
     // Return the list of indices of modified variables after mutating a clause
     public ArrayList<Integer> getModifiedVarIdx(int idxClause, int before, int after) {
-        List<Integer> relatedVars = getIdxVarsInClause(idxClause);
+        ArrayList<Integer> relatedVars = getIdxVarsInClause(idxClause);
         ArrayList<Integer> modifiedVars = new ArrayList<>();
         // The first variable is modified
         if(this.table[after][0] != this.table[before][0]) {
-            modifiedVars.add(Math.abs(relatedVars.get(0))-1);
+            modifiedVars.add(relatedVars.get(0));
         }
         // The second variable is modified
         if(this.table[after][1] != this.table[before][1]) {
-            modifiedVars.add(Math.abs(relatedVars.get(1))-1);
+            modifiedVars.add(relatedVars.get(1));
         }
         // Both variables are not modified -> not possible
         if(modifiedVars.size() == 0) {
-            System.err.println("ERROR: Gene remains the same after mutation.");
+            System.err.println("ERROR getModifiedVarIdx: Gene remains the same after mutation.");
             assert(false);
         }
         return modifiedVars;
@@ -148,10 +178,10 @@ public class MaxSatBanditInstance implements SearchSpace {
         // The objective clauses are not the same as the mutated one
         ArrayList<Integer> modifiedClauses = new ArrayList<>();
         for(Integer idx: modifiedVars) {
-            ArrayList<Integer> refs = this.references.get(idx);
-            for(Integer ref: refs) {
-                if(ref != idxClause) {
-                    modifiedClauses.add(ref);
+            ArrayList<Integer> relatedClauses = this.references.get(idx);
+            for(Integer thisClauseIdx: relatedClauses) {
+                if(thisClauseIdx != idxClause) {
+                    modifiedClauses.add(thisClauseIdx);
                 }
             }
         }
@@ -178,21 +208,21 @@ public class MaxSatBanditInstance implements SearchSpace {
         return -1;
     }
 
+    // Return the current indices in truth table of clauses
     public int[] getIndicesInTable() {
         int[] indices = new int[this.nbClauses];
         for(int i=0; i<indices.length; i++) {
-            int idx = 0;
-            List<Integer> currentClause = this.sat.getSAT().getClauses().get(i);
+            int[] currentClause = varsInClauses[i];
             double[] newPair = new double[2];
-            assert(currentClause.size()==2);
+            assert(currentClause.length==2);
             for (int j=0; j<2; j++) {
-                int value = currentClause.get(j);
+                int value = currentClause[j];
                 if (value > 0)
                     newPair[j] = variables[value-1];
                 else if (value < 0)
                     newPair[j] = 1-variables[-value-1];
                 else
-                    System.err.println("ERROR: Variable " + value + " with index 0.");
+                    System.err.println("ERROR getIndicesInTable: Variable " + value + " with index 0.");
             }
             indices[i] = getIdxInTable(newPair);
         }
@@ -207,8 +237,17 @@ public class MaxSatBanditInstance implements SearchSpace {
 
     // Replace the variables by the new ones
     public void replaceVariables() {
-        this.variables = newVariables;
+        for(int i=0; i<newVariables.length; i++) {
+            this.variables[i] = newVariables[i];
+        }
         this.clauseValues = convertVariablesToClause(this.variables);
+    }
+
+    public void resetNewVariables() {
+        for(int i=0; i<variables.length; i++) {
+            newVariables[i] = variables[i];
+        }
+        this.newClauseValues = convertVariablesToClause(this.newVariables);
     }
 
     // Get the list of variables in the i^th clause
@@ -226,6 +265,10 @@ public class MaxSatBanditInstance implements SearchSpace {
 
     public MaxSAT getProblem() {
         return sat;
+    }
+
+    public void flip(double[] _variables, int idx) {
+        _variables[idx] = 1 - _variables[idx];
     }
 
     @Override

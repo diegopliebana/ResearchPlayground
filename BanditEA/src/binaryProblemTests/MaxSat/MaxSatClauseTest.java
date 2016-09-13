@@ -26,7 +26,7 @@ public class MaxSatClauseTest {
     static double bestYets[][];
 
     public static void main(String[] args) {
-        int nTrials = 100;
+        int nTrials = 1;
         int nEvals = 100000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
@@ -227,7 +227,7 @@ public class MaxSatClauseTest {
 
             double after = evaluate(this.problem.getNewVariables());
 
-            double delta = after - bestYet;
+            double delta = -(after - bestYet)/(1+relatedGenesIndices.size());
 
             // Replace
             if (delta >= 0) {
@@ -235,11 +235,9 @@ public class MaxSatClauseTest {
                 this.problem.replaceVariables();
                 // TODO This is somewhere we can play with
                 gene.applyReward(delta);
-                // gene.applyReward(delta/(1+relatedGenesIndices.size()));
 
                 for(int idx: relatedGenesIndices) {
                     genome.getGenome().getGene(idx).applyReward(delta);
-                    //genome.getGenome().getGene(idx).applyReward(delta/(1+relatedGenesIndices.size()));
                 }
             } else {
                 this.problem.resetNewVariables();

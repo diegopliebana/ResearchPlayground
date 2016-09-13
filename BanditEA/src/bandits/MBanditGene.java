@@ -54,8 +54,8 @@ public class MBanditGene {
     }
 
     public void mutate() {
-        //randomMutate();
-        banditMutate();
+        randomMutate();
+        //banditMutate();
     }
 
     public int randomMutate() {
@@ -80,7 +80,7 @@ public class MBanditGene {
             // that would not be a mutation!!!
             if (i != x) {
                 double exploit = exploit(i);
-                double explore = explore2(armPulls[i]);
+                double explore = explore(armPulls[i]);
                 // small random numbers: break ties in unexpanded nodes
                 double noise = random.nextDouble() * eps;
                 // System.out.format("%d\t %.2f\t %.2f\n", i, exploit, explore);
@@ -112,6 +112,12 @@ public class MBanditGene {
         return ss.max();
     }
 
+    public double meanDelta() {
+        StatSummary ss = new StatSummary();
+        for (double d : deltaRewards) ss.add(d);
+        return ss.mean();
+    }
+
     public double urgency(int nEvals) {
         return rescue() + explore(nEvals);
     }
@@ -124,6 +130,9 @@ public class MBanditGene {
     public double rescue() {
         return -maxDelta() / nMutations;
     }
+//    public double rescue() {
+//        return -meanDelta() / nMutations;
+//    }
 
     // standard UCB Explore term
     // consider modifying a value that's not been changed much yet
@@ -131,9 +140,6 @@ public class MBanditGene {
         return k * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
     }
 
-    public double explore2(int ithPulls) {
-        return k * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
-    }
 
     public double exploit(int i) {
         return deltaRewards[i] / (armPulls[i] + 1);

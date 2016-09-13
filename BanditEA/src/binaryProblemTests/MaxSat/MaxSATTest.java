@@ -25,7 +25,7 @@ public class MaxSATTest {
 
 
     public static void main(String[] args) {
-        int nTrials = 100;
+        int nTrials = 1;
         int nEvals = 100000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
@@ -125,18 +125,18 @@ public class MaxSATTest {
         while(evalsSoFar < nEvals){
             iterations++;
             // Bandit-EA
-            //ArrayList<BanditGene> genes = genome.selectGeneToMutate(evalsSoFar);
+            ArrayList<BanditGene> genes = genome.selectGeneToMutate(evalsSoFar);
 
             // Simple 1+1
-            ArrayList<BanditGene> genes = new ArrayList<>();
-            BanditGene g = genome.selectRandomGene();
-            genes.add(g);
+//            ArrayList<BanditGene> genes = new ArrayList<>();
+//            BanditGene g = genome.selectRandomGene();
+//            genes.add(g);
 
             for(BanditGene gene: genes)
                 gene.mutate();
             double after = evaluate();
-            double delta = (after - bestYet)/genes.size();
-            //double delta = (after - bestYet);
+            //double delta = (after - bestYet)/genes.size();
+            double delta = (after - bestYet);
 
             for(BanditGene gene: genes) {
                 gene.applyReward(delta);

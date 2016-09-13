@@ -22,7 +22,7 @@ public class MBanditGeneTest {
 
             int cur = gene.x;
 
-            double delta = (cur - prev) * 0.1;
+            double delta = (cur - prev);
 
             gene.applyReward(delta);
             System.out.println("Mutated value = " + gene.x);

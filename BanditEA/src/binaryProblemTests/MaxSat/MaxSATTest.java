@@ -43,11 +43,16 @@ public class MaxSATTest {
         StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals, 1);
         System.out.println(ssArray[0]);
         System.out.println(ssArray[1]);
-        dump(bestYets, "banditEA.txt");
+        dump(bestYets, String.join("","2bandit_rdm_MAXSAT_C", Integer.toString((int)BanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
     }
 
     public MaxSATTest(String fileName) {
         setSATProblem(fileName);
+        this.nBandits = this.problem.getSAT().getNumVariables();
+    }
+
+    public MaxSATTest(MaxSAT _problem) {
+        this.problem = _problem;
         this.nBandits = this.problem.getSAT().getNumVariables();
     }
 
@@ -112,17 +117,20 @@ public class MaxSATTest {
         this.success = false;
         int iterations = 0;
 
+        System.out.println("Initialised with y=" + (this.problem.getSAT().getNumClauses() - bestYet));
+
+
         bestYets[nTrial][iterations] = this.problem.getSAT().getNumClauses() - bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
             // Bandit-EA
-            ArrayList<BanditGene> genes = genome.selectGeneToMutate(evalsSoFar);
+            //ArrayList<BanditGene> genes = genome.selectGeneToMutate(evalsSoFar);
 
             // Simple 1+1
-//            ArrayList<BanditGene> genes = new ArrayList<>();
-//            BanditGene g = genome.selectRandomGene();
-//            genes.add(g);
+            ArrayList<BanditGene> genes = new ArrayList<>();
+            BanditGene g = genome.selectRandomGene();
+            genes.add(g);
 
             for(BanditGene gene: genes)
                 gene.mutate();

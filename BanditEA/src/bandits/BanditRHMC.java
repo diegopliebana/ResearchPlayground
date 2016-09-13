@@ -14,8 +14,8 @@ public class BanditRHMC extends BanditEA {
 
 
     public BanditRHMC(int _nBandits) {
-        super(_nBandits)
-;    }
+        super(_nBandits);
+    }
 
     @Override
     public ArrayList<BanditGene> mutateGenome(int evalsSoFar) {

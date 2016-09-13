@@ -42,15 +42,32 @@ public class MBanditGene {
     }
 
     public void randomize() {
-        // x = 0 ; // random.nextInt(nArms);
         x = random.nextInt(nArms);
         armPulls[x]++;
         nPulls++;
+    }
 
+    public void resetX(int _x) {
+        x = _x;
+        armPulls[x]=1;
+        nPulls=1;
     }
 
     public void mutate() {
+        //randomMutate();
         banditMutate();
+    }
+
+    public int randomMutate() {
+        int idx = random.nextInt(nArms);
+        while(idx==x) {
+            idx = random.nextInt(nArms);
+        }
+        xPrevious = x;
+        x = idx;
+        armPulls[x]++;
+        nPulls++;
+        return x;
     }
 
     public int banditMutate() {
@@ -63,7 +80,7 @@ public class MBanditGene {
             // that would not be a mutation!!!
             if (i != x) {
                 double exploit = exploit(i);
-                double explore = explore(armPulls[i]);
+                double explore = explore2(armPulls[i]);
                 // small random numbers: break ties in unexpanded nodes
                 double noise = random.nextDouble() * eps;
                 // System.out.format("%d\t %.2f\t %.2f\n", i, exploit, explore);
@@ -111,6 +128,10 @@ public class MBanditGene {
     // standard UCB Explore term
     // consider modifying a value that's not been changed much yet
     public double explore(int ithPulls) {
+        return k * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
+    }
+
+    public double explore2(int ithPulls) {
         return k * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
     }
 

@@ -45,7 +45,7 @@ public class MBanditEA implements EvoAlg {
 
             // the evaluator keeps track of all the logging
 
-            MBanditGene gene = genome.selectGeneToMutate(nTrials);
+            MBanditGene gene = genome.selectOneGeneToMutate(nTrials);
 
             double before = evaluator.evaluate(genome.toArray());
 

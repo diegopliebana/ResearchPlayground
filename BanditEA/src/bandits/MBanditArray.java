@@ -11,7 +11,7 @@ import utilities.Picker;
  */
 
 
-public class MBanditArray {
+public class MBanditArray extends BanditEA {
 
     static Random random = new Random();
     static double eps = 1e-6;
@@ -19,12 +19,22 @@ public class MBanditArray {
     int nBandits;
     ArrayList<MBanditGene> genome;
 
+    public MBanditArray(int _nBandits) {
+        super(_nBandits);
+    }
+
+    @Override
+    public ArrayList<BanditGene> mutateGenome(int evalsSoFar) {
+        return null;
+    }
+
     public MBanditArray(SearchSpace searchSpace) {
-        this.nBandits = nBandits;
-        genome = new ArrayList<>();
         this.nBandits = searchSpace.nDims();
+        genome = new ArrayList<>();
+        urgencies = new ArrayList<>();
         for (int i=0; i<nBandits; i++) {
             genome.add(new MBanditGene(searchSpace.nValues(i)));
+            urgencies.add(0.0);
         }
     }
 
@@ -37,37 +47,42 @@ public class MBanditArray {
         return a;
     }
 
-    public MBanditGene selectGeneToMutate(int nEvals) {
-
-        Picker<MBanditGene> picker = new Picker<>();
-
-        int i = 0;
-        for (MBanditGene gene : genome) {
-            // break ties with small random values
-            // System.out.println(i++ + "\t " + gene.statusString(nEvals));
-            picker.add(gene.urgency(nEvals) + eps * random.nextDouble(), gene);
-        }
-
-        // System.out.println(picker.getBestScore());
-        return picker.getBest();
-
+    @Override
+    public ArrayList<BanditGene> selectGeneToMutate(int evalsSoFar) {
+        // no use
+        return new ArrayList<>();
     }
 
-    public int selectGeneIdxToMutate(int nEvals) {
+    public MBanditGene selectOneGeneToMutate(int nEvals) {
+        Picker<MBanditGene> picker = new Picker<>();
+        for (MBanditGene gene : genome) {
+            picker.add(gene.urgency(nEvals) + eps * random.nextDouble(), gene);
+        }
+        return picker.getBest();
+    }
 
+    public int selectOneGeneIdxToMutate(int nEvals) {
         Picker<Integer> picker = new Picker<>();
-
         int idx = 0;
         for (MBanditGene gene : genome) {
-            // break ties with small random values
-            // System.out.println(i++ + "\t " + gene.statusString(nEvals));
             picker.add(gene.urgency(nEvals) + eps * random.nextDouble(), idx);
             idx++;
         }
-
-        // System.out.println(picker.getBestScore());
         return picker.getBest();
+    }
 
+    public int selectRandomGeneIdx() {
+        return random.nextInt(this.nBandits);
+    }
+
+    public double updateUrgency(int evalsSoFar) {
+        double sum = 0.0;
+        for (int i=0; i<genome.size(); i++) {
+            double urgency = genome.get(i).urgency(evalsSoFar);
+            this.urgencies.set(i,urgency);
+            sum += urgency;
+        }
+        return sum;
     }
 
     public MBanditGene getGene(int idx) {

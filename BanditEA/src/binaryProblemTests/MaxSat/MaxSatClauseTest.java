@@ -44,7 +44,7 @@ public class MaxSatClauseTest {
         StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals);
         System.out.println(ssArray[0]);
         System.out.println(ssArray[1]);
-        dump(bestYets, String.join("","MAXSAT2_C", Integer.toString((int)MBanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
+        dump(bestYets, String.join("","mbandit_UCB_UCB_MAXSAT_C", Integer.toString((int)MBanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
     }
 
     public MaxSatClauseTest(String fileName) {
@@ -71,15 +71,21 @@ public class MaxSatClauseTest {
         // get the current variable indices in the truth table -> current values of the bandits
         int[] indices = this.problem.getIndicesInTable();
         for(int i=0; i<this.nBandits; i++) {
-            this.genome.getGenome().getGene(i).setX(indices[i]); // setup the current value
+            this.genome.getGenome().getGene(i).resetX(indices[i]); // setup the current value
         }
     }
 
     // TODO this is the part to play with
     public double evaluate(double[] solution) {
         evalsSoFar++;
-        double fitness = this.problem.sumClauseValue(solution);
-        //double fitness = this.problem.getNbTrueClauses(solution);
+        //double fitness = this.problem.sumClauseValue(solution);
+        double fitness = this.problem.getNbTrueClauses(solution);
+        return fitness;
+    }
+
+    public double evaluate2(double[] vars) {
+        evalsSoFar++;
+        double fitness = this.problem.evaluate(vars);
         return fitness;
     }
 
@@ -138,7 +144,7 @@ public class MaxSatClauseTest {
 
             //System.out.println(pair[0] + " " + pair[1] + "    " + newPair[0] + " " + newPair[1]);
             // Find the index of new entry
-            int mutateFrom = this.problem.getIdxInTable(pair);
+            //int mutateFrom = this.problem.getIdxInTable(pair);
             int mutateTo = this.problem.getIdxInTable(newPair);
             //System.out.println("Mutate from "+ mutateFrom + " to " + mutateTo);
             MBanditGene currentGene = genome.getGenome().getGene(idxGene);
@@ -193,6 +199,12 @@ public class MaxSatClauseTest {
         this.success = false;
         this.evalsSoFar = 0;
         this.bestYet = this.evaluate(this.problem.getVariables());
+        //System.out.println("nbClauses=" + this.problem.getNbClauses());
+        //System.out.println("bestYet=" + bestYet);
+        //MaxSATTest newtest = new MaxSATTest(this.problem.getProblem());
+        //System.out.println("bestYet=" + newtest.problem.evaluate(this.problem.getVariables()));
+        System.out.println("Initialised with y=" + (this.problem.getNbClauses()-this.bestYet) );
+
         if (evalsSoFar != 1) {
             System.err.println("ERROR: The current evaluation number is wrongly counted.");
         }
@@ -203,9 +215,10 @@ public class MaxSatClauseTest {
         while (evalsSoFar < nEvals) {
             iterations++;
             // Select the gene to mutate
-            int idxGene = genome.getGenome().selectGeneIdxToMutate(evalsSoFar);
+            int idxGene = genome.getGenome().selectOneGeneIdxToMutate(evalsSoFar);
+            //int idxGene = genome.getGenome().selectRandomGeneIdx();
             MBanditGene gene = genome.getGenome().getGene(idxGene);
-            assert(genome.getGenome().selectGeneToMutate(evalsSoFar) == gene);
+            assert(genome.getGenome().selectOneGeneToMutate(evalsSoFar) == gene);
 
             // Mutate the selected gene
             gene.mutate();

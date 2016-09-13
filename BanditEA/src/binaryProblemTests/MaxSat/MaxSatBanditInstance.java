@@ -75,6 +75,11 @@ public class MaxSatBanditInstance implements SearchSpace {
                 }
             }
         }
+        for(int i=0; i<nbClauses; i++) {
+            List<Integer> currentClause = this.sat.getSAT().getClauses().get(i);
+            assert(this.varsInClauses[i][0]==currentClause.get(0));
+            assert(this.varsInClauses[i][1]==currentClause.get(1));
+        }
     }
 
     // Randomly initialise the variables, then update the clause value
@@ -91,12 +96,11 @@ public class MaxSatBanditInstance implements SearchSpace {
         double[] clauses = new double[nbClauses];
         for (int i = 0; i < clauses.length; i++) {
             double currentClauseValue = 0;
-            int[] currentClause = varsInClauses[i];
-            for(Integer j: currentClause) {
+            for(Integer j: varsInClauses[i]) {
                 if(j>0)
                     currentClauseValue = (vars[j-1]>0) ? currentClauseValue + 1 : currentClauseValue;
                 else if(j<0)
-                    currentClauseValue = (vars[-j-1]<0) ? currentClauseValue + 1 : currentClauseValue;
+                    currentClauseValue = (vars[-j-1]<1) ? currentClauseValue + 1 : currentClauseValue;
                 else
                     System.err.println("ERROR convertVariablesToClause: Variable " + j + " with index 0.");
             }
@@ -130,6 +134,20 @@ public class MaxSatBanditInstance implements SearchSpace {
             sum = clauses[i]>0 ? sum+1 : sum;
         }
         return sum;
+    }
+
+    public double evaluate(double[] solution) {
+        double nbTrues = 0.0;
+        for(int i=0; i<nbClauses; i++) {
+            boolean currentValue = false;
+            List<Integer> currentClause = this.getProblem().getSAT().getClauses().get(i);
+            for(Integer j: currentClause) {
+                currentValue = (j>0) ? (currentValue || (solution[j-1]>0)) : (currentValue || (solution[-j-1]<1));
+            }
+            if(currentValue)
+                nbTrues = nbTrues + 1;
+        }
+        return nbTrues;
     }
 
     public int optimalValue() {
@@ -281,4 +299,7 @@ public class MaxSatBanditInstance implements SearchSpace {
         return this.table.length;
     }
 
+    public int getNbClauses() {
+        return this.nbClauses;
+    }
 }

@@ -31,8 +31,8 @@ public class BanditRMHCTest {
         int numBandits = 100;
         int nTrials = 30;
         float noise = 0.0f;
-        int nEvals = 20;
-        System.out.println(runTrials(numBandits, nTrials, nEvals, noise, 8, 1));
+        int nEvals = 10000;
+        System.out.println(runTrials(numBandits, nTrials, nEvals, noise, 1, 1));
     }
 
     public static StatSummary runTrials(int nBandits, int nTrials, int nEvals, float noise, int blockSize, int resampling) {

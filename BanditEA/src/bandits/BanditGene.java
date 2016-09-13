@@ -25,7 +25,7 @@ public class BanditGene {
 
     // start all at one to avoid div zero
     int nMutations = 1;
-    static double k = 10000;
+    static public double k = 1;
 
     Integer xPrevious;
 

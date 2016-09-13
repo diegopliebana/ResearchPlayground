@@ -54,8 +54,8 @@ public class MBanditGene {
     }
 
     public void mutate() {
-        randomMutate();
-        //banditMutate();
+        //randomMutate();
+        banditMutate();
     }
 
     public int randomMutate() {

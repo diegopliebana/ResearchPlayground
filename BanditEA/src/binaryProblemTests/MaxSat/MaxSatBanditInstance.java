@@ -268,9 +268,14 @@ public class MaxSatBanditInstance implements SearchSpace {
         this.newClauseValues = convertVariablesToClause(this.newVariables);
     }
 
+
     // Get the list of variables in the i^th clause
     public List<Integer> getClauseAt(int i) {
         return this.sat.getSAT().getClauses().get(i);
+    }
+
+    public ArrayList<Integer> getRelatedClause(int varIdx) {
+        return this.references.get(varIdx);
     }
 
     public double[] getVariables() {
@@ -301,5 +306,9 @@ public class MaxSatBanditInstance implements SearchSpace {
 
     public int getNbClauses() {
         return this.nbClauses;
+    }
+
+    public int getNbVars() {
+        return this.nbVars;
     }
 }

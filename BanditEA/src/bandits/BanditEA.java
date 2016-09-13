@@ -74,14 +74,14 @@ public abstract class BanditEA {
         return genomeCopy;
     }
 
-    public ArrayList<BanditGene> getGenome() {
-        return genome;
-    }
 
     public BanditGene selectRandomGene() {
         return genome.get(new Random().nextInt(genome.size()));
     }
 
+    public ArrayList<BanditGene> getGenome() {
+        return genome;
+    }
 
 
     public boolean[] getBooleanSolution() {

@@ -19,6 +19,8 @@ public class MBanditArray extends BanditEA {
     int nBandits;
     ArrayList<MBanditGene> genome;
 
+
+
     public MBanditArray(int _nBandits) {
         super(_nBandits);
     }
@@ -85,7 +87,13 @@ public class MBanditArray extends BanditEA {
         return sum;
     }
 
+    public ArrayList<MBanditGene> getMGenome() {
+        return genome;
+    }
+
+
     public MBanditGene getGene(int idx) {
         return this.genome.get(idx);
     }
+
 }

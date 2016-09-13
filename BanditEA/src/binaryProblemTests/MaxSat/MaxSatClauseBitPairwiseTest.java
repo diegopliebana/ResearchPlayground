@@ -5,25 +5,28 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import bandits.MBanditEA;
+import bandits.MBanditArray;
 import bandits.MBanditGene;
 import benchmarks.maxSAT.MaxSAT;
+import utilities.Picker;
 import utilities.StatSummary;
 
 /**
- * Created by Jialin Liu on 06/09/2016.
+ * Created by Jialin Liu on 13/09/2016.
  * CSEE, University of Essex
  * jialin.liu@essex.ac.uk
  */
-public class MaxSatClauseTest {
+public class MaxSatClauseBitPairwiseTest {
     public MaxSatBanditInstance problem;
     boolean success;
     int evalsSoFar;
     int nBandits;
     double bestYet;
-    MBanditEA genome;
+    MBanditArray genome;
     static double bestYets[][];
+    static Random rdm = new Random();
 
     public static void main(String[] args) {
         int nTrials = 1;
@@ -44,14 +47,14 @@ public class MaxSatClauseTest {
         StatSummary[] ssArray = runTrials(fileName, nTrials, nEvals);
         System.out.println(ssArray[0]);
         System.out.println(ssArray[1]);
-        dump(bestYets, String.join("","mbandit_UCB_UCB_MAXSAT_C", Integer.toString((int)MBanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
+        dump(bestYets, String.join("","mbanditPairwise_mean_UCB_MAXSAT_C", Integer.toString((int)MBanditGene.k), "_", Integer.toString(nEvals), "evals_", Integer.toString(nTrials), "runs.txt"));
     }
 
-    public MaxSatClauseTest(String fileName) {
+    public MaxSatClauseBitPairwiseTest(String fileName) {
         // Load problem
         setSATProblem(fileName);
         // Initialise the optimiser
-        setupBandit();
+        //setupBandit();
     }
 
     // Load problem
@@ -64,15 +67,15 @@ public class MaxSatClauseTest {
     public void setupBandit() {
         // reset variable values and clause values
         this.problem.initVars();
+        this.nBandits = this.problem.getNbClauses();
         // create a new banditEA
-        this.genome = new MBanditEA();
-        this.genome.init(problem);
-        this.nBandits = this.genome.getNBandit();
+        this.genome = new MBanditArray(problem);
         // get the current variable indices in the truth table -> current values of the bandits
         int[] indices = this.problem.getIndicesInTable();
         for(int i=0; i<this.nBandits; i++) {
-            this.genome.getMGenome().getGene(i).resetX(indices[i]); // setup the current value
+            this.genome.getGene(i).resetX(indices[i]); // setup the current value
         }
+        //System.out.println("this.genome.getGenome().size()="+this.genome.getMGenome().size());
     }
 
     // TODO this is the part to play with
@@ -96,7 +99,7 @@ public class MaxSatClauseTest {
     // Mutate the related genes
     public ArrayList<Integer> mutateRelatedGenes(int idxClause) {
         // The selected mutated gene
-        MBanditGene gene = genome.getMGenome().getGene(idxClause);
+        MBanditGene gene = genome.getGene(idxClause);
         // Modified variables indices
         ArrayList<Integer> modifiedVars = this.problem.getModifiedVarIdx(idxClause, gene.getPreviousX(), gene.getX());
         // Update the modified variables
@@ -147,7 +150,7 @@ public class MaxSatClauseTest {
             //int mutateFrom = this.problem.getIdxInTable(pair);
             int mutateTo = this.problem.getIdxInTable(newPair);
             //System.out.println("Mutate from "+ mutateFrom + " to " + mutateTo);
-            MBanditGene currentGene = genome.getMGenome().getGene(idxGene);
+            MBanditGene currentGene = genome.getGene(idxGene);
             currentGene.mutateTo(mutateTo);
         }
         return modifiedGenes;
@@ -163,7 +166,7 @@ public class MaxSatClauseTest {
 
         // Create a test
         // The problem is load only once
-        MaxSatClauseTest test = new MaxSatClauseTest(fileName);
+        MaxSatClauseBitPairwiseTest test = new MaxSatClauseBitPairwiseTest(fileName);
 
         // Run several trials
         for (int i=0; i<nTrials; i++) {
@@ -192,7 +195,7 @@ public class MaxSatClauseTest {
     }
 
     // Run one trial
-    public MBanditEA run(int nEvals, int nTrial) {
+    public MBanditArray run(int nEvals, int nTrial) {
         // Reset the optimiser and initial solution
         setupBandit();
 
@@ -215,10 +218,12 @@ public class MaxSatClauseTest {
         while (evalsSoFar < nEvals) {
             iterations++;
             // Select the gene to mutate
-            int idxGene = genome.getMGenome().selectOneGeneIdxToMutate(evalsSoFar);
+            int idxGene = selectMaxUrgency();
+
+            //int idxGene = genome.getGenome().selectOneGeneIdxToMutate(evalsSoFar);
             //int idxGene = genome.getGenome().selectRandomGeneIdx();
-            MBanditGene gene = genome.getMGenome().getGene(idxGene);
-            assert(genome.getMGenome().selectOneGeneToMutate(evalsSoFar) == gene);
+            MBanditGene gene = genome.getGene(idxGene);
+            assert(genome.selectOneGeneToMutate(evalsSoFar) == gene);
 
             // Mutate the selected gene
             gene.mutate();
@@ -237,7 +242,7 @@ public class MaxSatClauseTest {
                 gene.applyReward(delta);
 
                 for(int idx: relatedGenesIndices) {
-                    genome.getMGenome().getGene(idx).applyReward(delta);
+                    genome.getGene(idx).applyReward(delta);
                 }
             } else {
                 this.problem.resetNewVariables();
@@ -245,7 +250,7 @@ public class MaxSatClauseTest {
 
             gene.revertOrKeep(delta);
             for(int idx: relatedGenesIndices) {
-                genome.getMGenome().getGene(idx).revertOrKeep(delta);
+                genome.getGene(idx).revertOrKeep(delta);
             }
             bestYets[nTrial][iterations] = getOptimalValue();
         }
@@ -270,5 +275,25 @@ public class MaxSatClauseTest {
             System.out.println("MEH: " + e.toString());
             e.printStackTrace();
         }
+    }
+
+    public int selectMaxUrgency() {
+        //System.out.println("gene ");
+        Picker<Integer> picker = new Picker<>();
+        for(int i=0; i<this.problem.getNbVars(); i++) {
+            //System.out.println("gene "+ i+ " urgency=" + calculateUrgency(i));
+            picker.add(calculateUrgency(i) + 1e-6 * rdm.nextDouble(), i);
+        }
+        return picker.getBest();
+    }
+
+    public double calculateUrgency(int varIdx) {
+        double urgency = 0.0;
+        ArrayList<Integer> relatedGenes = this.problem.getRelatedClause(varIdx);
+        for(Integer i: relatedGenes) {
+            //System.out.println("relatedGenes "+ varIdx + " length=" + relatedGenes.size());
+            urgency += this.genome.getGene(i).urgency(evalsSoFar);
+        }
+        return urgency;
     }
 }

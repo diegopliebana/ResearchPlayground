@@ -29,7 +29,11 @@ public class MBanditGene {
 
     // start all at one to avoid div zero
     int nMutations = 1;
+    // exploration factor for urgency operator
     static public double k = 10000;
+    // exploration factor for mutation operator
+    static public double C = 10000;
+
 
     Integer xPrevious;
 
@@ -80,7 +84,7 @@ public class MBanditGene {
             // that would not be a mutation!!!
             if (i != x) {
                 double exploit = exploit(i);
-                double explore = explore(armPulls[i]);
+                double explore = exploreForMutation(armPulls[i]);
                 // small random numbers: break ties in unexpanded nodes
                 double noise = random.nextDouble() * eps;
                 // System.out.format("%d\t %.2f\t %.2f\n", i, exploit, explore);
@@ -119,7 +123,7 @@ public class MBanditGene {
     }
 
     public double urgency(int nEvals) {
-        return rescue() + explore(nEvals);
+        return rescue() + exploreForUrgency(nEvals);
     }
 
 
@@ -136,8 +140,14 @@ public class MBanditGene {
 
     // standard UCB Explore term
     // consider modifying a value that's not been changed much yet
-    public double explore(int ithPulls) {
+    public double exploreForUrgency(int ithPulls) {
         return k * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
+    }
+
+    // standard UCB Explore term
+    // consider modifying a value that's not been changed much yet
+    public double exploreForMutation(int ithPulls) {
+        return C * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
     }
 
 
@@ -160,7 +170,7 @@ public class MBanditGene {
 
     public String statusString(int nEvals) {
         return String.format("%d\t rescue: %.2f\t explore: %.2f\t urgency: %.2f",
-                x, rescue(), explore(nEvals), urgency(nEvals));
+                x, rescue(), exploreForUrgency(nEvals), urgency(nEvals));
     }
 
     public int getX() {

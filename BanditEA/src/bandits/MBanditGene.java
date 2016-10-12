@@ -30,9 +30,9 @@ public class MBanditGene {
     // start all at one to avoid div zero
     int nMutations = 1;
     // exploration factor for urgency operator
-    static public double k = 10000;
+    static public double k = 2;
     // exploration factor for mutation operator
-    static public double C = 10000;
+    static public double C = 2;
 
 
     Integer xPrevious;

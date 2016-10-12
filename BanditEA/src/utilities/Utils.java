@@ -74,6 +74,8 @@ public class Utils
       }
     return hasFound;
   }
+
+
   public static int randomInRange(Random rdm, int min, int max) {
     return (rdm.nextInt(max-min+1)+min);
   }

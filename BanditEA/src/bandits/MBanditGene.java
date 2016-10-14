@@ -147,7 +147,7 @@ public class MBanditGene {
     // standard UCB Explore term
     // consider modifying a value that's not been changed much yet
     public double exploreForMutation(int ithPulls) {
-        return C * Math.sqrt(Math.log(nPulls + 1) / (ithPulls + 1));
+        return C * Math.sqrt(Math.log(ithPulls + 1) / (nPulls + 1));
     }
 
 

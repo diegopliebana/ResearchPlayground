@@ -76,8 +76,9 @@ public class Utils
   }
 
 
-  public static int randomInRange(Random rdm, int min, int max) {
-    return (rdm.nextInt(max-min+1)+min);
+  public static int randomInRange(Random rdm, int min, int max, int gap) {
+    int unit = (max-min)/gap;
+    return (rdm.nextInt(unit+1)*gap+min);
   }
 
 }

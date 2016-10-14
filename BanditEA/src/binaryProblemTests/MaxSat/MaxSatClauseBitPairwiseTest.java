@@ -82,7 +82,8 @@ public class MaxSatClauseBitPairwiseTest {
     public double evaluate(double[] solution) {
         evalsSoFar++;
         //double fitness = this.problem.sumClauseValue(solution);
-        double fitness = this.problem.getNbTrueClauses(solution);
+//        double fitness = this.problem.getNbTrueClauses(solution);
+        double fitness = this.problem.getNbTrueClauses(solution)/(this.problem.getNbClauses()-161);
         return fitness;
     }
 
@@ -206,14 +207,14 @@ public class MaxSatClauseBitPairwiseTest {
         //System.out.println("bestYet=" + bestYet);
         //MaxSATTest newtest = new MaxSATTest(this.problem.getProblem());
         //System.out.println("bestYet=" + newtest.problem.evaluate(this.problem.getVariables()));
-        System.out.println("Initialised with y=" + (this.problem.getNbClauses()-this.bestYet) );
+        System.out.println("Initialised with y=" + this.bestYet );
 
         if (evalsSoFar != 1) {
             System.err.println("ERROR: The current evaluation number is wrongly counted.");
         }
 
         int iterations = 0;
-        bestYets[nTrial][iterations] = getOptimalValue();
+        bestYets[nTrial][iterations] = 0;
 
         while (evalsSoFar < nEvals) {
             iterations++;
@@ -232,7 +233,7 @@ public class MaxSatClauseBitPairwiseTest {
 
             double after = evaluate(this.problem.getNewVariables());
 
-            double delta = -(after - bestYet)/(1+relatedGenesIndices.size());
+            double delta = (after - bestYet)/(1+relatedGenesIndices.size());
 
             // Replace
             if (delta >= 0) {

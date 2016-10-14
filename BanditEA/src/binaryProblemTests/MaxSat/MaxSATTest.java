@@ -3,6 +3,7 @@ package binaryProblemTests.MaxSat;
 import bandits.BanditEA;
 import bandits.BanditEAMultiMut;
 import bandits.BanditGene;
+import bandits.BanditRHMC;
 import benchmarks.maxSAT.MaxSAT;
 import utilities.StatSummary;
 
@@ -25,8 +26,8 @@ public class MaxSATTest {
 
 
     public static void main(String[] args) {
-        int nTrials = 1;
-        int nEvals = 100000;
+        int nTrials = 100;
+        int nEvals = 1000000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
         String[] everythingInThisDir = dir.list();
@@ -70,7 +71,7 @@ public class MaxSATTest {
         for(int i=0; i<genome.getGenome().size();i++) {
             solution[i] = (genome.getGenome().get(i).getX()>0) ? true : false;
         }
-        double fitness = this.problem.evaluate(solution);
+        double fitness = this.problem.evaluate(solution)/(this.problem.getSAT().getNumClauses()-161);
         return fitness;
     }
 
@@ -80,11 +81,11 @@ public class MaxSATTest {
         StatSummary ssTime = new StatSummary();
         bestYets = new double[nTrials][nEvals];
         MaxSATTest test = new MaxSATTest(fileName);
-        System.out.println("Problem dimension "+test.nBandits + " optimum " + test.problem.getSAT().getNumClauses());
-        test.genome = new BanditEAMultiMut(test.nBandits, nbSelectedGenes);
-        System.out.println("K=" + BanditGene.getExplorationFactor() + " nbSelectedGenes=" + nbSelectedGenes);
-        //test.genome = new BanditRHMC(test.nBandits);
-        //System.out.println("K=" + BanditGene.getExplorationFactor() );
+//        System.out.println("Problem dimension "+test.nBandits + " optimum " + test.problem.getSAT().getNumClauses());
+//        test.genome = new BanditEAMultiMut(test.nBandits, nbSelectedGenes);
+//        System.out.println("K=" + BanditGene.getExplorationFactor() + " nbSelectedGenes=" + nbSelectedGenes);
+        test.genome = new BanditRHMC(test.nBandits);
+//        System.out.println("K=" + BanditGene.getExplorationFactor() );
 
         for (int i=0; i<nTrials; i++) {
             for(int j = 0; j < nEvals; ++j) bestYets[i][j] = 0; //init.
@@ -94,7 +95,7 @@ public class MaxSATTest {
             //    ss.add(test.evalsSoFar);
             //}
             long endTime = System.nanoTime();
-            ss.add(test.problem.getSAT().getNumClauses()-test.bestYet);
+            ss.add(test.bestYet);
             ssTime.add((endTime-startTime)/1000000);
         }
         ssArray[0] = ss;
@@ -117,10 +118,10 @@ public class MaxSATTest {
         this.success = false;
         int iterations = 0;
 
-        System.out.println("Initialised with y=" + (this.problem.getSAT().getNumClauses() - bestYet));
+        System.out.println("Initialised with y=" + bestYet);
 
 
-        bestYets[nTrial][iterations] = this.problem.getSAT().getNumClauses() - bestYet;
+        bestYets[nTrial][iterations] = bestYet;
 
         while(evalsSoFar < nEvals){
             iterations++;
@@ -146,9 +147,9 @@ public class MaxSATTest {
                 //System.out.println(this.problem.getSAT().getNumClauses() - bestYet);
             }
 
-            bestYets[nTrial][iterations] = this.problem.getSAT().getNumClauses() - bestYet;
+            bestYets[nTrial][iterations] = bestYet;
 
-            if (bestYet == this.problem.getSAT().getNumClauses() - 161) {
+            if (bestYet == 1) {
                 System.out.println("Optimum found after " + evalsSoFar + " evals");
                 success = true;
                 break;

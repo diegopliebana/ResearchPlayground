@@ -120,7 +120,8 @@ public class MaxSatBanditInstance implements SearchSpace {
     }
 
     public int getNbTrueClauses() {
-        int sum = 0;
+      clauseValues = convertVariablesToClause(this.variables);
+      int sum = 0;
         for (int i=0; i<this.clauseValues.length; i++) {
             sum = this.clauseValues[i]>0 ? sum+1 : sum;
         }
@@ -150,8 +151,10 @@ public class MaxSatBanditInstance implements SearchSpace {
         return nbTrues;
     }
 
-    public int optimalValue() {
-        return (this.nbClauses - getNbTrueClauses());
+    public double optimalValue() {
+//      return (this.nbClauses - getNbTrueClauses());
+      return (double) getNbTrueClauses() / (this.nbClauses-161);
+
     }
 
     // Return the indices of variables in the given clause

@@ -29,8 +29,8 @@ public class MaxSatClauseBitPairwiseTest {
     static Random rdm = new Random();
 
     public static void main(String[] args) {
-        int nTrials = 1;
-        int nEvals = 100000;
+        int nTrials = 10;
+        int nEvals = 1000000;
 
 /*        final File dir = new File("benchmarks/MaxSAT/ms_random/abrame-habet/max2sat/120v");
         String[] everythingInThisDir = dir.list();
@@ -83,7 +83,7 @@ public class MaxSatClauseBitPairwiseTest {
         evalsSoFar++;
         //double fitness = this.problem.sumClauseValue(solution);
 //        double fitness = this.problem.getNbTrueClauses(solution);
-        double fitness = this.problem.getNbTrueClauses(solution)/(this.problem.getNbClauses()-161);
+        double fitness = (double) this.problem.getNbTrueClauses(solution)/(this.problem.getNbClauses()-161);
         return fitness;
     }
 
@@ -93,7 +93,7 @@ public class MaxSatClauseBitPairwiseTest {
         return fitness;
     }
 
-    public int getOptimalValue() {
+    public double getOptimalValue() {
         return problem.optimalValue();
     }
 
@@ -235,6 +235,7 @@ public class MaxSatClauseBitPairwiseTest {
 
             double delta = (after - bestYet)/(1+relatedGenesIndices.size());
 
+//             System.out.println(after + " " + delta);
             // Replace
             if (delta >= 0) {
                 bestYet = after;
@@ -253,7 +254,13 @@ public class MaxSatClauseBitPairwiseTest {
             for(int idx: relatedGenesIndices) {
                 genome.getGene(idx).revertOrKeep(delta);
             }
-            bestYets[nTrial][iterations] = getOptimalValue();
+            bestYets[nTrial][iterations] = bestYet;
+
+          if (bestYet == 1) {
+            System.out.println("Optimum found after " + evalsSoFar + " evals");
+            success = true;
+            break;
+          }
         }
 
         return genome;
@@ -283,18 +290,18 @@ public class MaxSatClauseBitPairwiseTest {
         Picker<Integer> picker = new Picker<>();
         for(int i=0; i<this.problem.getNbVars(); i++) {
             //System.out.println("gene "+ i+ " urgency=" + calculateUrgency(i));
-            picker.add(calculateUrgency(i) + 1e-6 * rdm.nextDouble(), i);
+            picker.add(calculateUrgency(i), i);
         }
         return picker.getBest();
     }
 
     public double calculateUrgency(int varIdx) {
-        double urgency = 0.0;
+        double urgency = this.genome.getGene(varIdx).urgency(evalsSoFar);
         ArrayList<Integer> relatedGenes = this.problem.getRelatedClause(varIdx);
         for(Integer i: relatedGenes) {
             //System.out.println("relatedGenes "+ varIdx + " length=" + relatedGenes.size());
             urgency += this.genome.getGene(i).urgency(evalsSoFar);
         }
-        return urgency;
+        return urgency / (1+relatedGenes.size());
     }
 }
